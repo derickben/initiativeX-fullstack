@@ -1,0 +1,17 @@
+#This file is made for the purpose of storing the categories and tags of initiativeX,,
+#,,
+# COLUMN Catid          CatID,,
+# COLUMN cat_name:     CAT Name,,
+#,,
+id,cat_name,tag_name
+100,education,love
+101,music,bespoke
+102,film,strength
+103,comics,style
+104,food,cool
+105,finance,myth
+106,,goal
+107,,tech
+108,,fintech
+,,
+,phones,stocks

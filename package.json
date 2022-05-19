@@ -1,0 +1,16 @@
+{
+  "name": "harrison",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "create-next-app": "^12.1.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "client": "npm run dev --prefix nextjs",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
