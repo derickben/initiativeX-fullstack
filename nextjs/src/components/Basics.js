@@ -15,6 +15,7 @@ import { styled } from "@mui/material/styles";
 import { Typography } from "@mui/material";
 import CategorySelect from "./CategorySelect";
 import TagSelect from "./TagSelect";
+import Date from "./Date";
 
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
@@ -42,7 +43,7 @@ export default function Basics() {
     title: "",
     desc: "",
     photo: {},
-    duration: "",
+    duration: null,
   });
 
   const handleChange = (prop) => (event) => {
@@ -156,25 +157,7 @@ export default function Basics() {
         <CategorySelect categories={categories} loading={isCategoryLoading} />
         <TagSelect tags={tags} loading={isTagLoading} />
 
-        <Item>
-          <Typography variant="h5" component="div" gutterBottom>
-            Campaign Duration *
-          </Typography>
-          <Typography paragraph>
-            How many days will you be running your campaign for? You can run a
-            campaign for any number of days, with a 60 day duration maximum.
-          </Typography>
-          <FormControl sx={{}} variant="outlined">
-            <InputLabel htmlFor="outlined-adornment-duration">Days</InputLabel>
-            <OutlinedInput
-              id="outlined-adornment-duration"
-              value={values.duration}
-              onChange={handleChange("duration")}
-              aria-describedby="outlined-duration-helper-text"
-              label="Days"
-            />
-          </FormControl>
-        </Item>
+        <Date value={values.duration} handleChange={handleChange} />
         <ButtonDiv variant="contained" type="submit">
           <Button variant="contained" type="submit">
             Save & Continue
