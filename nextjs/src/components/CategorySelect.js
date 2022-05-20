@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { styled } from "@mui/material/styles";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
@@ -15,7 +15,13 @@ const Item = styled("div")(({ theme }) => ({
   width: "100%",
 }));
 
-export default function CategorySelect({ categories, loading }) {
+export default function CategorySelect({
+  categories,
+  value,
+  handleChange,
+  loading,
+}) {
+  console.log("categoryValue", value);
   const categoryBody = useMemo(() => {
     return categories?.map(({ category }) => (
       <MenuItem value={category} key={category}>
@@ -23,12 +29,6 @@ export default function CategorySelect({ categories, loading }) {
       </MenuItem>
     ));
   }, [categories]);
-
-  const [value, setValue] = useState("");
-
-  const handleChange = (event) => {
-    setValue(event.target.value);
-  };
 
   return (
     <Item>
@@ -46,7 +46,7 @@ export default function CategorySelect({ categories, loading }) {
           id="demo-simple-select"
           label="Category "
           value={value}
-          onChange={handleChange}
+          onChange={handleChange("categoryValue")}
         >
           {loading ? (
             <Box sx={{ display: "flex", justifyContent: "center" }}>

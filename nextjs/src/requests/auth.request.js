@@ -27,7 +27,7 @@ export const loginRequest = async (
     // Set success in UI message
     setSnackbarOpen(true);
     setSuccess({
-      alertMessage: "Registration successful!",
+      alertMessage: "Login successful!",
       severityValue: "success",
     });
 
@@ -71,7 +71,10 @@ export const registerRequest = async (
     document.cookie = `token=${response.data.token}; SameSite=None; Secure;`;
     setError(null);
     setSnackbarOpen(true);
-    setSuccess({ alertMessage: "Login successful!", severityValue: "success" });
+    setSuccess({
+      alertMessage: "Registration successful!",
+      severityValue: "success",
+    });
 
     // Set Loading False
     setLoading(false);

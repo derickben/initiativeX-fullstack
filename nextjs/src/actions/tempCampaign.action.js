@@ -4,7 +4,8 @@ import {
   EDIT_TEMP_CAMPAIGN,
   DELETE_TEMP_CAMPAIGN,
   GET_TEMP_CAMPAIGN,
-  SET_LOADING_TEMP_CAMPAIGN,
+  SET_LOADING_GET_TEMP_CAMPAIGN,
+  SET_LOADING_ADD_TEMP_CAMPAIGN,
 } from "./types";
 import {
   getTempCampaignRequest,
@@ -17,17 +18,9 @@ import TempCampaignReducer from "src/reducers/tempCampaign.reducer";
 
 const TempCampaignAction = (props) => {
   const campaignState = {
-    title: "",
-    photo: "",
-    desc: "",
-    category: "",
-    tags: [],
-    videoLink: "",
-    amountNeeded: 0,
-    faq: [],
-    duration: "",
-    perks: [],
+    tempCampaign: {},
     loading: {
+      getCampaign: false,
       addVideo: false,
       saveBasics: false,
       saveContent: false,
@@ -41,18 +34,26 @@ const TempCampaignAction = (props) => {
   // GET TEMPORARY CAMPAIGN OF CURRENT USER
   const getTempCampaign = async (userId) => {
     // Set loading to true
-    setLoading(SET_LOADING_TEMP_CAMPAIGN);
+    setLoading(SET_LOADING_GET_TEMP_CAMPAIGN);
 
     // Make axios get request to get the temporary campaign
-    await getTempCampaignRequest(dispatch);
+    getTempCampaignRequest(dispatch, userId);
   };
 
   // CREATE TEMPORARY CAMPAIGN
-  const addTempCampaign = async () => {
+  const addTempCampaign = async (data) => {
     // Set Loading to true
+    setLoading(SET_LOADING_ADD_TEMP_CAMPAIGN);
+
+    // Convert data into Form Data
+    const formData = new FormData();
+    formData.append("data", JSON.stringify(data));
 
     // Make axios post request to create or update a temporary campaign
-    await addTempCampaignRequest(dispatch);
+    await addTempCampaignRequest(dispatch, formData);
+
+    // Call getTempCampaign
+    getTempCampaign();
   };
 
   // UPDATE TEMPORARY CAMPAIGN

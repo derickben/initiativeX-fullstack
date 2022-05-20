@@ -3,19 +3,27 @@ import {
   EDIT_TEMP_CAMPAIGN,
   DELETE_TEMP_CAMPAIGN,
   GET_TEMP_CAMPAIGN,
-  SET_LOADING_TEMP_CAMPAIGN,
+  SET_LOADING_GET_TEMP_CAMPAIGN,
+  SET_LOADING_ADD_TEMP_CAMPAIGN,
 } from "src/actions/types";
 
 const TempCampaignReducer = (state, action) => {
   switch (action.type) {
-    case SET_LOADING_TEMP_CAMPAIGN:
+    case SET_LOADING_GET_TEMP_CAMPAIGN:
+      return { ...state, loading: { ...state.loading, getCampaign: true } };
+
+    case SET_LOADING_ADD_TEMP_CAMPAIGN:
       return { ...state };
 
     case ADD_TEMP_CAMPAIGN:
       return { ...state };
 
     case GET_TEMP_CAMPAIGN:
-      return { ...state };
+      return {
+        ...state,
+        tempCampaign: action.payload,
+        loading: { ...state.loading, getCampaign: false },
+      };
 
     case EDIT_TEMP_CAMPAIGN:
       return { ...state };

@@ -4,14 +4,14 @@
 # COLUMN cat_name:     CAT Name,,
 #,,
 id,cat_name,tag_name
-100,education,love
-101,music,bespoke
-102,film,strength
-103,comics,style
-104,food,cool
-105,finance,myth
-106,,goal
-107,,tech
+100,education,Love
+101,music,Bespoke
+102,film,Strength
+103,comics,Style
+104,food,Cool
+105,finance,Myth
+106,,Goal
+107,,Tech
 108,,fintech
-,,
-,phones,stocks
+,,Creativity
+,phones,Stocks

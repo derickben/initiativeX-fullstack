@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, useContext, useEffect } from "react";
+import TempCampaignContext from "src/context/tempCampaign.context";
+import LoginContext from "src/context/login.context";
 import useCategories from "../hooks/useCategory.hook";
 import useTags from "../hooks/useTag.hook";
 import Box from "@mui/material/Box";
@@ -16,6 +18,8 @@ import { Typography } from "@mui/material";
 import CategorySelect from "./CategorySelect";
 import TagSelect from "./TagSelect";
 import Date from "./Date";
+import { API_URL } from "src/config";
+import LoadingModal from "./LoadingModal";
 
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
@@ -39,20 +43,75 @@ const Input = styled("input")({
 });
 
 export default function Basics() {
+  const { user, getCurrentUser } = useContext(LoginContext);
+  const {
+    getTempCampaign,
+    addTempCampaign,
+    tempCampaign,
+    loading: isBasicLoading,
+  } = useContext(TempCampaignContext);
+
   const [values, setValues] = useState({
     title: "",
     desc: "",
-    photo: {},
-    duration: null,
+    categoryValue: "",
   });
+
+  const [duration, setDuration] = useState(null);
+  const [tagName, settagName] = useState([]);
+  const [photo, setPhoto] = useState({});
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
   };
 
+  const handleDurationChange = (newValue) => {
+    setDuration(newValue);
+  };
+
+  const handleTagChange = (event) => {
+    const {
+      target: { value },
+    } = event;
+    settagName(typeof value === "string" ? value.split(",") : value);
+  };
+
+  const handleImageChange = (e) => {
+    setPhoto(e.target.files[0]);
+  };
+
+  const handleFormSubmit = (event) => {
+    e.preventDefault();
+    const data = {
+      photo,
+      duration,
+      tagName,
+      title: values.title,
+      desc: values.desc,
+      categoryValue: values.categoryValue,
+    };
+
+    addTempCampaign(data);
+  };
+
   const { categories, isCategoryLoading } = useCategories();
 
   const { tags, isTagLoading } = useTags();
+
+  useEffect(() => {
+    getCurrentUser();
+    getTempCampaign(user.id);
+    if (tempCampaign._id) {
+      setValues({
+        title: tempCampaign.title,
+        desc: tempCampaign.desc,
+        categoryValue: tempCampaign.category,
+      });
+      setDuration(tempCampaign.duration);
+      settagName(tempCampaign.tags);
+    }
+    console.log("tempCampaign", tempCampaign);
+  }, [tempCampaign._id, user.id]);
 
   return (
     <Box
@@ -62,6 +121,8 @@ export default function Basics() {
       }}
       method="post"
       autoComplete="off"
+      action={`${API_URL}/campaigns-temp`}
+      onSubmit={handleFormSubmit}
     >
       <Stack
         direction="column"
@@ -128,7 +189,13 @@ export default function Basics() {
           </Typography>
 
           <label htmlFor="icon-button-file">
-            <Input accept="image/*" id="icon-button-file" type="file" />
+            <Input
+              accept="image/png, image/jpeg"
+              id="icon-button-file"
+              type="file"
+              name="photo"
+              onChange={handleImageChange}
+            />
 
             <IconButton
               color="primary"
@@ -154,10 +221,29 @@ export default function Basics() {
             </IconButton>
           </label>
         </Item>
-        <CategorySelect categories={categories} loading={isCategoryLoading} />
-        <TagSelect tags={tags} loading={isTagLoading} />
 
-        <Date value={values.duration} handleChange={handleChange} />
+        {/* SELECT CATEGORY COMPONENT */}
+        <CategorySelect
+          categories={categories}
+          value={values.categoryValue}
+          handleChange={handleChange}
+          loading={isCategoryLoading}
+        />
+
+        {/* SELECT TAG COMPONENT */}
+        <TagSelect
+          tags={tags}
+          loading={isTagLoading}
+          handleTagChange={handleTagChange}
+          tagName={tagName}
+        />
+
+        {/* DATE PICKER COMPONENT */}
+        <Date value={duration} handleChange={handleDurationChange} />
+
+        {/* LOADING MODAL COMPONENT */}
+        <LoadingModal loading={isBasicLoading.getCampaign} />
+
         <ButtonDiv variant="contained" type="submit">
           <Button variant="contained" type="submit">
             Save & Continue

@@ -14,9 +14,6 @@ const Item = styled("div")(({ theme }) => ({
 }));
 
 export default function Date({ value, handleChange }) {
-  const handleDateChange = () => {
-    handleChange("duration");
-  };
   return (
     <Item>
       <Typography variant="h5" component="div" gutterBottom>
@@ -30,7 +27,7 @@ export default function Date({ value, handleChange }) {
         <DatePicker
           label="Days"
           value={value}
-          onChange={handleDateChange}
+          onChange={handleChange}
           renderInput={(params) => <TextField {...params} />}
         />
       </LocalizationProvider>

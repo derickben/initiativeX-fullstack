@@ -21,7 +21,8 @@ exports.getTempCampaigns = asyncHandler(async (req, res, next) => {
 // @routes  GET /api/campaigns-temp/:id
 // @access  Private [user]
 exports.getTempCampaign = asyncHandler(async (req, res, next) => {
-  const campaign = await CampaignTemp.findById(req.params.id);
+  console.log(req.user.id);
+  const campaign = await CampaignTemp.findOne({ user: req.params.id });
 
   if (!campaign) {
     return next(
