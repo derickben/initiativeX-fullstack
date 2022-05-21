@@ -21,7 +21,6 @@ exports.getTempCampaigns = asyncHandler(async (req, res, next) => {
 // @routes  GET /api/campaigns-temp/:id
 // @access  Private [user]
 exports.getTempCampaign = asyncHandler(async (req, res, next) => {
-  console.log(req.user.id);
   const campaign = await CampaignTemp.findOne({ user: req.params.id });
 
   if (!campaign) {
@@ -52,6 +51,7 @@ exports.createTempCampaign = asyncHandler(async (req, res, next) => {
     // if the user has, update the campaign instead of saving
     if (existingTempCampaign) {
       isTempCampaignExisting = true;
+
       existingTempCampaign = await CampaignTemp.findOneAndUpdate(
         { user: req.user.id },
         req.body,

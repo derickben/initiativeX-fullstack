@@ -18,7 +18,7 @@ export const loginRequest = async (
     const response = await axios.post(
       `${API_URL}/auth/login`,
       loginDetails,
-      AXIOS_OPTION
+      AXIOS_OPTION()
     );
 
     document.cookie = `token=${response.data.token}; SameSite=None; Secure;`;
@@ -65,7 +65,7 @@ export const registerRequest = async (
     const response = await axios.post(
       `${API_URL}/auth/register`,
       registerDetails,
-      AXIOS_OPTION
+      AXIOS_OPTION()
     );
 
     document.cookie = `token=${response.data.token}; SameSite=None; Secure;`;
@@ -101,7 +101,7 @@ export const currentUserRequest = async (dispatch) => {
     const res = await axios.get(
       `${API_URL}/auth/me`,
       { withCredentials: true },
-      AXIOS_OPTION
+      AXIOS_OPTION()
     );
     dispatch({ type: CURRENT_USER, payload: res.data.data });
   } catch (error) {

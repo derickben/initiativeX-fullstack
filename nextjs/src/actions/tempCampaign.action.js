@@ -41,7 +41,7 @@ const TempCampaignAction = (props) => {
   };
 
   // CREATE TEMPORARY CAMPAIGN
-  const addTempCampaign = async (data) => {
+  const addTempCampaign = async (userId, data) => {
     // Set Loading to true
     setLoading(SET_LOADING_ADD_TEMP_CAMPAIGN);
 
@@ -53,7 +53,7 @@ const TempCampaignAction = (props) => {
     await addTempCampaignRequest(dispatch, formData);
 
     // Call getTempCampaign
-    getTempCampaign();
+    getTempCampaign(userId);
   };
 
   // UPDATE TEMPORARY CAMPAIGN

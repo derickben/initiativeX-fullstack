@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AXIOS_OPTION, API_URL } from "src/config";
+import { API_URL } from "src/config";
 
 // GET ALL CATEGORIES
 export const httpGetCategories = async (isCategoryLoading) => {

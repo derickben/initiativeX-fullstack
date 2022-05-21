@@ -13,7 +13,10 @@ const TempCampaignReducer = (state, action) => {
       return { ...state, loading: { ...state.loading, getCampaign: true } };
 
     case SET_LOADING_ADD_TEMP_CAMPAIGN:
-      return { ...state };
+      return {
+        ...state,
+        loading: { ...state.loading, saveBasics: !saveBasics },
+      };
 
     case ADD_TEMP_CAMPAIGN:
       return { ...state };

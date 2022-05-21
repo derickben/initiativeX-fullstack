@@ -81,17 +81,17 @@ export default function Basics() {
   };
 
   const handleFormSubmit = (event) => {
-    e.preventDefault();
+    event.preventDefault();
     const data = {
       photo,
       duration,
-      tagName,
+      tags: tagName,
       title: values.title,
       desc: values.desc,
-      categoryValue: values.categoryValue,
+      category: values.categoryValue,
     };
 
-    addTempCampaign(data);
+    addTempCampaign(user.id, data);
   };
 
   const { categories, isCategoryLoading } = useCategories();
