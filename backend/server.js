@@ -22,6 +22,7 @@ const campaign = require("./routes/campaign");
 const campaignTemp = require("./routes/campaignTemp");
 const comment = require("./routes/comment");
 const category = require("./routes/category");
+const upload = require("./routes/upload");
 const tag = require("./routes/tag");
 const donate = require("./routes/donors");
 
@@ -54,6 +55,7 @@ app.use("/api/campaigns", campaign);
 app.use("/api/campaigns-temp", campaignTemp);
 app.use("/api/comments", comment);
 app.use("/api/categories", category);
+app.use("/api/uploads", upload);
 app.use("/api/tags", tag);
 app.use("/api/donate", donate);
 
