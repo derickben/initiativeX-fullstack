@@ -18,14 +18,14 @@ const style = {
 };
 
 export default function LoadingModal({ loading }) {
-  console.log("loading", loading);
-  const [open, setOpen] = useState(loading);
+  let isLoading = loading.getCampaign || loading.saveBasics;
+  const [open, setOpen] = useState(isLoading);
   const handleClose = () => setOpen(false);
 
   useEffect(() => {
-    const handleOpen = () => setOpen(loading);
+    const handleOpen = () => setOpen(isLoading);
     handleOpen();
-  }, [loading]);
+  }, [isLoading]);
 
   return (
     <div>

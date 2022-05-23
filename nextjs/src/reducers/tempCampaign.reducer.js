@@ -5,6 +5,7 @@ import {
   GET_TEMP_CAMPAIGN,
   SET_LOADING_GET_TEMP_CAMPAIGN,
   SET_LOADING_ADD_TEMP_CAMPAIGN,
+  SET_LOADING_PHOTO_UPLOAD,
 } from "src/actions/types";
 
 const TempCampaignReducer = (state, action) => {
@@ -15,7 +16,13 @@ const TempCampaignReducer = (state, action) => {
     case SET_LOADING_ADD_TEMP_CAMPAIGN:
       return {
         ...state,
-        loading: { ...state.loading, saveBasics: !saveBasics },
+        loading: { ...state.loading, saveBasics: !state.loading.saveBasics },
+      };
+
+    case SET_LOADING_PHOTO_UPLOAD:
+      return {
+        ...state,
+        loading: { ...state.loading, photo: true },
       };
 
     case ADD_TEMP_CAMPAIGN:

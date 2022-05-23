@@ -23,6 +23,7 @@ const TempCampaignAction = (props) => {
       getCampaign: false,
       addVideo: false,
       saveBasics: false,
+      photo: false,
       saveContent: false,
       savePerks: false,
       update: false,
@@ -33,27 +34,33 @@ const TempCampaignAction = (props) => {
 
   // GET TEMPORARY CAMPAIGN OF CURRENT USER
   const getTempCampaign = async (userId) => {
-    // Set loading to true
-    setLoading(SET_LOADING_GET_TEMP_CAMPAIGN);
+    if (userId) {
+      // Set loading to true
+      setLoading(SET_LOADING_GET_TEMP_CAMPAIGN);
 
-    // Make axios get request to get the temporary campaign
-    getTempCampaignRequest(dispatch, userId);
+      // Make axios get request to get the temporary campaign
+      getTempCampaignRequest(userId, dispatch);
+    } else {
+      return;
+    }
   };
 
   // CREATE TEMPORARY CAMPAIGN
-  const addTempCampaign = async (userId, data) => {
-    // Set Loading to true
-    setLoading(SET_LOADING_ADD_TEMP_CAMPAIGN);
+  const addTempCampaign = async (userId, data, photo) => {
+    if (userId) {
+      // Set Loading to true
+      setLoading(SET_LOADING_ADD_TEMP_CAMPAIGN);
 
-    // Convert data into Form Data
-    const formData = new FormData();
-    formData.append("data", JSON.stringify(data));
+      // Convert data into Form Data
+      const formData = new FormData();
+      formData.append("data", JSON.stringify(data));
 
-    // Make axios post request to create or update a temporary campaign
-    await addTempCampaignRequest(dispatch, formData);
+      // Make axios post request to create or update a temporary campaign
+      await addTempCampaignRequest(data, photo, dispatch);
 
-    // Call getTempCampaign
-    getTempCampaign(userId);
+      // Call getTempCampaign
+      getTempCampaign(userId);
+    }
   };
 
   // UPDATE TEMPORARY CAMPAIGN
@@ -74,7 +81,7 @@ const TempCampaignAction = (props) => {
 
   //  SET LOADING
   const setLoading = (type) => {
-    dispatch(type);
+    dispatch({ type });
   };
 
   return (

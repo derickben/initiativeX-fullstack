@@ -45,6 +45,11 @@ export const loginRequest = async (
         alertMessage: error.response.data.error,
         severityValue: "error",
       });
+    } else {
+      setError({
+        alertMessage: "Network Error",
+        severityValue: "error",
+      });
     }
   }
 };

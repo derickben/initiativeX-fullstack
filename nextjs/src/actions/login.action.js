@@ -24,7 +24,7 @@ const LoginAction = (props) => {
 
   //  SET LOADING
   const setLoading = (type) => {
-    dispatch(type);
+    dispatch({ type });
   };
 
   return (

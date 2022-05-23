@@ -4,6 +4,7 @@ import { styled } from "@mui/material/styles";
 import { TOOLBAR_OPTIONS } from "src/utility/quillToolbar";
 
 const Item = styled("div")(({ theme, quill }) => ({
+  width: "100%",
   "& .ql-editor": {
     // width: "8.5in",
     minHeight: "1in",

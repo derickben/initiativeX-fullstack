@@ -19,8 +19,6 @@ exports.uploadFile = asyncHandler(async (req, res, next) => {
 
   const file = req.files["photo"];
 
-  console.log(path.extname(file.name));
-
   // Make sure the image is a photo
   if (!file.mimetype.startsWith("image")) {
     return next(new ErrorResponse(`Please upload an image file`, 400));

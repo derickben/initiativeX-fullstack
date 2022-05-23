@@ -1,4 +1,5 @@
 import { useState, useContext, useEffect } from "react";
+import Image from "next/image";
 import TempCampaignContext from "src/context/tempCampaign.context";
 import LoginContext from "src/context/login.context";
 import useCategories from "../hooks/useCategory.hook";
@@ -20,6 +21,7 @@ import TagSelect from "./TagSelect";
 import Date from "./Date";
 import { API_URL } from "src/config";
 import LoadingModal from "./LoadingModal";
+import ProgressBar from "./ProgressBar";
 
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
@@ -27,6 +29,10 @@ const Item = styled("div")(({ theme }) => ({
   textAlign: "left",
   width: "100%",
 }));
+
+const myLoader = ({ src, width, quality }) => {
+  return `http://localhost:5000/${src}?w=${width}&q=${quality || 75}`;
+};
 
 const ButtonDiv = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
@@ -60,6 +66,9 @@ export default function Basics() {
   const [duration, setDuration] = useState(null);
   const [tagName, settagName] = useState([]);
   const [photo, setPhoto] = useState({});
+  const [uploadedFile, setUploadedFile] = useState("");
+  const [uploadProgress, setUploadedProgress] = useState("");
+  const [fileName, setFileName] = useState("UPLOAD IMAGE");
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
@@ -78,12 +87,13 @@ export default function Basics() {
 
   const handleImageChange = (e) => {
     setPhoto(e.target.files[0]);
+    setFileName(e.target.files[0].name);
+    setUploadedProgress("done");
   };
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
     const data = {
-      photo,
       duration,
       tags: tagName,
       title: values.title,
@@ -91,7 +101,7 @@ export default function Basics() {
       category: values.categoryValue,
     };
 
-    addTempCampaign(user.id, data);
+    addTempCampaign(user.id, data, photo);
   };
 
   const { categories, isCategoryLoading } = useCategories();
@@ -107,11 +117,13 @@ export default function Basics() {
         desc: tempCampaign.desc,
         categoryValue: tempCampaign.category,
       });
+      setFileName("File");
+      setUploadedFile(tempCampaign.photo);
       setDuration(tempCampaign.duration);
       settagName(tempCampaign.tags);
     }
     console.log("tempCampaign", tempCampaign);
-  }, [tempCampaign._id, user.id]);
+  }, [tempCampaign._id, user.id, tempCampaign.photo]);
 
   return (
     <Box
@@ -206,8 +218,8 @@ export default function Basics() {
                 elevation={3}
                 sx={{
                   display: "flex",
-                  width: 400,
-                  height: 400,
+                  width: 200,
+                  height: 200,
                   textAlign: "center",
                   alignItems: "center",
                   justifyContent: "center",
@@ -215,12 +227,25 @@ export default function Basics() {
               >
                 <PhotoCamera sx={{ mr: 2 }} color="primary" />
                 <Typography variant="button" color="primary">
-                  UPLOAD IMAGE
+                  {fileName}
+                  {uploadProgress ? <ProgressBar /> : null}
                 </Typography>
               </Paper>
             </IconButton>
           </label>
         </Item>
+
+        {uploadedFile ? (
+          <Image
+            loader={myLoader}
+            src={uploadedFile}
+            alt="Picture of the author"
+            width={220}
+            height={220}
+          />
+        ) : (
+          ""
+        )}
 
         {/* SELECT CATEGORY COMPONENT */}
         <CategorySelect
@@ -242,7 +267,7 @@ export default function Basics() {
         <Date value={duration} handleChange={handleDurationChange} />
 
         {/* LOADING MODAL COMPONENT */}
-        <LoadingModal loading={isBasicLoading.getCampaign} />
+        <LoadingModal loading={isBasicLoading} />
 
         <ButtonDiv variant="contained" type="submit">
           <Button variant="contained" type="submit">

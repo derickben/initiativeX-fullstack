@@ -146,6 +146,8 @@ export default function Content() {
           {checkForUrlError()}
           {displayIframe(youtubeLink)}
         </Item>
+
+        <TextEditor />
       </Stack>
     </Box>
   );
