@@ -46,7 +46,14 @@ const TempCampaignAction = (props) => {
   };
 
   // CREATE TEMPORARY CAMPAIGN
-  const addTempCampaign = async (userId, data, photo) => {
+  const addTempCampaign = async (
+    userId,
+    data,
+    photo,
+    setError,
+    setSuccess,
+    setSnackbarOpen
+  ) => {
     if (userId) {
       // Set Loading to true
       setLoading(SET_LOADING_ADD_TEMP_CAMPAIGN);
@@ -56,7 +63,14 @@ const TempCampaignAction = (props) => {
       formData.append("data", JSON.stringify(data));
 
       // Make axios post request to create or update a temporary campaign
-      await addTempCampaignRequest(data, photo, dispatch);
+      await addTempCampaignRequest(
+        data,
+        photo,
+        setError,
+        setSuccess,
+        setSnackbarOpen,
+        dispatch
+      );
 
       // Call getTempCampaign
       getTempCampaign(userId);

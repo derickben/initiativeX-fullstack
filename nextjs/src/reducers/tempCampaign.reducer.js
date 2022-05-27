@@ -5,24 +5,20 @@ import {
   GET_TEMP_CAMPAIGN,
   SET_LOADING_GET_TEMP_CAMPAIGN,
   SET_LOADING_ADD_TEMP_CAMPAIGN,
-  SET_LOADING_PHOTO_UPLOAD,
 } from "src/actions/types";
 
 const TempCampaignReducer = (state, action) => {
   switch (action.type) {
     case SET_LOADING_GET_TEMP_CAMPAIGN:
-      return { ...state, loading: { ...state.loading, getCampaign: true } };
+      return {
+        ...state,
+        loading: { ...state.loading, getCampaign: !state.loading.getCampaign },
+      };
 
     case SET_LOADING_ADD_TEMP_CAMPAIGN:
       return {
         ...state,
         loading: { ...state.loading, saveBasics: !state.loading.saveBasics },
-      };
-
-    case SET_LOADING_PHOTO_UPLOAD:
-      return {
-        ...state,
-        loading: { ...state.loading, photo: true },
       };
 
     case ADD_TEMP_CAMPAIGN:

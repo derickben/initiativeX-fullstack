@@ -1,6 +1,5 @@
 import { useState, useContext, useCallback } from "react";
 import { API_URL } from "src/config";
-import { loginRequest } from "src/requests/auth.request";
 import LoginContext from "src/context/login.context";
 import Box from "@mui/material/Box";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -34,10 +33,9 @@ export default function FormLogin() {
     showPassword: false,
   });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const { loginError } = loginContext.error;
+  const { loginSuccess } = loginContext.success;
+  const { loginLoading } = loginContext.loading;
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
@@ -61,13 +59,7 @@ export default function FormLogin() {
       password: values.password,
     };
 
-    await loginRequest(
-      loginDetails,
-      setLoading,
-      setError,
-      setSuccess,
-      setSnackbarOpen
-    );
+    await loginContext.loginAction(loginDetails);
 
     loginContext.getCurrentUser();
   };
@@ -77,7 +69,7 @@ export default function FormLogin() {
       return;
     }
 
-    setSnackbarOpen(false);
+    loginContext.closeSnackbar();
   };
 
   return (
@@ -165,7 +157,7 @@ export default function FormLogin() {
                 fullWidth
                 variant="contained"
                 type="submit"
-                disabled={loading}
+                disabled={loginLoading}
               >
                 Sign In
               </Button>
@@ -174,10 +166,10 @@ export default function FormLogin() {
         </Box>
       </Stack>
       <ErrorSnackbar
-        toggleSnackbar={snackbarOpen}
+        toggleSnackbar={loginContext.snackbarOpen}
         closeSnackbar={closeSnackbar}
-        errorMessage={error}
-        successMessage={success}
+        errorMessage={loginError}
+        successMessage={loginSuccess}
       />
     </Box>
   );

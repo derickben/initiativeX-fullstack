@@ -1,6 +1,15 @@
 import { useReducer } from "react";
-import { SET_LOADING_GET_CURRENT_USER } from "./types";
-import { currentUserRequest } from "src/requests/auth.request";
+import {
+  SET_LOADING_GET_CURRENT_USER,
+  SET_LOADING_LOGIN,
+  CLOSE_SNACKBAR,
+  SET_LOADING_REGISTER,
+} from "./types";
+import {
+  loginRequest,
+  registerRequest,
+  currentUserRequest,
+} from "src/requests/auth.request";
 import LoginContext from "src/context/login.context";
 import LoginReducer from "src/reducers/login.reducer";
 
@@ -8,10 +17,27 @@ const LoginAction = (props) => {
   const loginState = {
     isAuthenticated: false,
     user: {},
-    loading: { editUser: false, currentUser: false },
+    error: { loginError: null, registerError: null },
+    success: { loginSuccess: null, registerSuccess: null },
+    snackbarOpen: false,
+    loading: {
+      editUser: false,
+      currentUser: false,
+      loginLoading: false,
+      registerLoading: false,
+    },
   };
 
   const [state, dispatch] = useReducer(LoginReducer, loginState);
+
+  // LOGIN ACTION
+  const loginAction = async (loginDetails) => {
+    // Set loading to true
+    setLoading(SET_LOADING_LOGIN);
+
+    // Make axios post request to login
+    await loginRequest(loginDetails, dispatch);
+  };
 
   // GET CURRENT USER
   const getCurrentUser = async () => {
@@ -27,8 +53,21 @@ const LoginAction = (props) => {
     dispatch({ type });
   };
 
+  // CLOSE SNACKBAR
+  const closeSnackbar = () => {
+    dispatch({ type: CLOSE_SNACKBAR });
+  };
+
   return (
-    <LoginContext.Provider value={{ ...state, setLoading, getCurrentUser }}>
+    <LoginContext.Provider
+      value={{
+        ...state,
+        setLoading,
+        closeSnackbar,
+        loginAction,
+        getCurrentUser,
+      }}
+    >
       {props.children}
     </LoginContext.Provider>
   );

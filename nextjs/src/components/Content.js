@@ -1,7 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import TextEditor from "./TextEditor";
 import { Box } from "@mui/material";
-import { styled, useTheme } from "@mui/material/styles";
+import { styled } from "@mui/material/styles";
 import { Typography } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
@@ -10,6 +10,7 @@ import OutlinedInput from "@mui/material/OutlinedInput";
 import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
+import Faq from "./Faq";
 
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
@@ -147,7 +148,19 @@ export default function Content() {
           {displayIframe(youtubeLink)}
         </Item>
 
-        <TextEditor />
+        <Item>
+          <Typography variant="h5" component="div" gutterBottom>
+            Story *
+          </Typography>
+          <Typography paragraph>
+            Tell potential contributors more about your campaign. Provide
+            details that will motivate people to contribute. A good pitch is
+            compelling, informative, and easy to digest.
+          </Typography>
+          <TextEditor />
+        </Item>
+
+        <Faq />
       </Stack>
     </Box>
   );

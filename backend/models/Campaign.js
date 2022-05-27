@@ -67,7 +67,7 @@ const CampaignSchema = new mongoose.Schema({
   duration: {
     type: Date,
     min: [Date.now, "Pick a future date"],
-    max: [Date.now() + 5.184e9, "Should not be more than 60 days"], // Max of 60 days
+    max: [Date.now() + 5.184e9, "Date should not be more than 60 days"], // Max of 60 days
     required: [true, "add campaign duration"],
   },
   createdAt: {

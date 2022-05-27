@@ -1,19 +1,16 @@
 import axios from "axios";
 import { AXIOS_OPTION, API_URL } from "src/config";
-import { CURRENT_USER, CURRENT_USER_NULL } from "src/actions/types";
+import {
+  CURRENT_USER,
+  CURRENT_USER_NULL,
+  LOGIN_FAILED,
+  LOGIN_FAILED_NETWORK,
+  LOGIN_USER,
+} from "src/actions/types";
 
 // Login post request
-export const loginRequest = async (
-  loginDetails,
-  setLoading,
-  setError,
-  setSuccess,
-  setSnackbarOpen
-) => {
+export const loginRequest = async (loginDetails, dispatch) => {
   try {
-    // Set loading to true
-    setLoading(true);
-
     // Make axios post request to login
     const response = await axios.post(
       `${API_URL}/auth/login`,
@@ -22,34 +19,30 @@ export const loginRequest = async (
     );
 
     document.cookie = `token=${response.data.token}; SameSite=None; Secure;`;
-    setError(null);
+    dispatch({ type: LOGIN_USER, payload: response.data });
 
-    // Set success in UI message
-    setSnackbarOpen(true);
-    setSuccess({
-      alertMessage: "Login successful!",
-      severityValue: "success",
-    });
+    // setError(null);
 
-    // Set Loading False
-    setLoading(false);
+    // // Set success in UI message
+    // setSnackbarOpen(true);
+    // setSuccess({
+    //   alertMessage: "Login successful!",
+    //   severityValue: "success",
+    // });
+
+    // // Set Loading False
+    // setLoading(false);
   } catch (error) {
     // Set Loading False
-    setLoading(false);
+    // setLoading(false);
     // Set error message in UI
-    setSnackbarOpen(true);
+    // setSnackbarOpen(true);
 
-    setSuccess(null);
+    // setSuccess(null);
     if (error?.response?.data?.success === false) {
-      setError({
-        alertMessage: error.response.data.error,
-        severityValue: "error",
-      });
+      dispatch({ type: LOGIN_FAILED, payload: error.response.data.error });
     } else {
-      setError({
-        alertMessage: "Network Error",
-        severityValue: "error",
-      });
+      dispatch({ type: LOGIN_FAILED_NETWORK });
     }
   }
 };

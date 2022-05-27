@@ -22,6 +22,7 @@ import Date from "./Date";
 import { API_URL } from "src/config";
 import LoadingModal from "./LoadingModal";
 import ProgressBar from "./ProgressBar";
+import ErrorSnackbar from "./ErrorSnackbar";
 
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
@@ -63,6 +64,10 @@ export default function Basics() {
     categoryValue: "",
   });
 
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+
   const [duration, setDuration] = useState(null);
   const [tagName, settagName] = useState([]);
   const [photo, setPhoto] = useState({});
@@ -101,7 +106,22 @@ export default function Basics() {
       category: values.categoryValue,
     };
 
-    addTempCampaign(user.id, data, photo);
+    addTempCampaign(
+      user.id,
+      data,
+      photo,
+      setError,
+      setSuccess,
+      setSnackbarOpen
+    );
+  };
+
+  const closeSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setSnackbarOpen(false);
   };
 
   const { categories, isCategoryLoading } = useCategories();
@@ -275,6 +295,12 @@ export default function Basics() {
           </Button>
         </ButtonDiv>
       </Stack>
+      <ErrorSnackbar
+        toggleSnackbar={snackbarOpen}
+        closeSnackbar={closeSnackbar}
+        errorMessage={error}
+        successMessage={success}
+      />
     </Box>
   );
 }
