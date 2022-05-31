@@ -1,7 +1,12 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useContext, useEffect } from "react";
+import { API_URL } from "src/config";
+import TempCampaignContext from "src/context/tempCampaign.context";
+import LoginContext from "src/context/login.context";
+import ErrorSnackbar from "./ErrorSnackbar";
+import LoadingModal from "./LoadingModal";
+import { Item, ButtonDiv, Iframe } from "src/utility/styledComp";
 import TextEditor from "./TextEditor";
 import { Box } from "@mui/material";
-import { styled } from "@mui/material/styles";
 import { Typography } from "@mui/material";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
@@ -13,50 +18,60 @@ import Button from "@mui/material/Button";
 import Faq from "./Faq";
 import FrequentlyAskedQuestion from "./FrequentlyAskedQuestion";
 
-const Item = styled("div")(({ theme }) => ({
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "left",
-  width: "100%",
-}));
-
-const Iframe = styled("iframe")(({ theme }) => ({
-  ...theme.typography.body2,
-  textAlign: "left",
-  height: 500,
-  width: "100%",
-}));
-
 let youtubeLink = "";
 
 export default function Content() {
+  const { user, getCurrentUser } = useContext(LoginContext);
+  const tempCampaignContext = useContext(TempCampaignContext);
+  const {
+    getTempCampaign,
+    addTempCampaign,
+    tempCampaign,
+    loading: isBasicLoading,
+  } = tempCampaignContext;
+
   const [values, setValues] = useState({
-    videoUrl: "",
+    videoLink: "",
   });
 
   const [urlError, setUrlError] = useState(null);
 
-  const [faq, setFaq] = useState([]);
-
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
+  };
+
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    const data = {
+      videoLink: values.videoLink,
+    };
+
+    addTempCampaign(user.id, data);
+  };
+
+  const closeSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    tempCampaignContext.closeSnackbar();
   };
 
   const handleAddVideoButtonClick = (event) => {
     event.preventDefault();
     const checker = /^(https?\:\/\/)?((www\.)?youtube\.com|youtu\.be)\/.+$/;
 
-    const isYoutubeUrl = checker.test(values.videoUrl);
+    const isYoutubeUrl = checker.test(values.videoLink);
 
     if (isYoutubeUrl) {
       setUrlError(null);
-      values["videoUrl"].includes("watch?v=")
+      values["videoLink"].includes("watch?v=")
         ? setValues({
             ...values,
-            videoUrl: values["videoUrl"].replace("watch?v=", "embed/"),
+            videoLink: values["videoLink"].replace("watch?v=", "embed/"),
           })
         : "";
-      youtubeLink = values["videoUrl"].replace("watch?v=", "embed/");
+      youtubeLink = values["videoLink"].replace("watch?v=", "embed/");
       console.log("youtubeLink", youtubeLink);
     } else {
       setUrlError({ error: "yes" });
@@ -87,6 +102,17 @@ export default function Content() {
 
   useCallback(() => {}, [youtubeLink]);
 
+  useEffect(() => {
+    getCurrentUser();
+    getTempCampaign(user.id);
+    if (tempCampaign._id) {
+      setValues({
+        videoLink: tempCampaign.videoLink,
+      });
+    }
+    console.log("tempCampaign", tempCampaign);
+  }, [tempCampaign._id, user.id, tempCampaign.videoLink]);
+
   return (
     <Box
       component="form"
@@ -95,6 +121,8 @@ export default function Content() {
       }}
       method="post"
       autoComplete="off"
+      action={`${API_URL}/campaigns-temp`}
+      onSubmit={handleFormSubmit}
     >
       <Stack
         direction="column"
@@ -129,8 +157,8 @@ export default function Content() {
                 // error={false}
                 id="outlined-error-helper-text"
                 placeholder="https://"
-                value={values.videoUrl}
-                onChange={handleChange("videoUrl")}
+                value={values.videoLink}
+                onChange={handleChange("videoLink")}
               />
             </Grid>
             <Grid item xs={2}>
@@ -160,7 +188,22 @@ export default function Content() {
           </Typography>
           <TextEditor />
         </Item>
+
+        {/* LOADING MODAL COMPONENT */}
+        <LoadingModal loading={isBasicLoading} />
+
+        <ButtonDiv variant="contained" type="submit">
+          <Button variant="contained" type="submit">
+            Save & Continue
+          </Button>
+        </ButtonDiv>
       </Stack>
+      <ErrorSnackbar
+        toggleSnackbar={tempCampaignContext.snackbarOpen}
+        closeSnackbar={closeSnackbar}
+        errorMessage={tempCampaignContext.error}
+        successMessage={tempCampaignContext.success}
+      />
     </Box>
   );
 }

@@ -1,4 +1,5 @@
 import { useState, useContext, useEffect } from "react";
+import { API_URL } from "src/config";
 import Image from "next/image";
 import TempCampaignContext from "src/context/tempCampaign.context";
 import LoginContext from "src/context/login.context";
@@ -14,40 +15,19 @@ import InputLabel from "@mui/material/InputLabel";
 import FormControl from "@mui/material/FormControl";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
-import { styled } from "@mui/material/styles";
 import { Typography } from "@mui/material";
 import CategorySelect from "./CategorySelect";
 import TagSelect from "./TagSelect";
 import Date from "./Date";
-import { API_URL } from "src/config";
+
 import LoadingModal from "./LoadingModal";
 import ProgressBar from "./ProgressBar";
 import ErrorSnackbar from "./ErrorSnackbar";
-
-const Item = styled("div")(({ theme }) => ({
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "left",
-  width: "100%",
-}));
+import { Item, ButtonDiv, Input } from "src/utility/styledComp";
 
 const myLoader = ({ src, width, quality }) => {
   return `http://localhost:5000/${src}?w=${width}&q=${quality || 75}`;
 };
-
-const ButtonDiv = styled("div")(({ theme }) => ({
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  display: "flex",
-  justifyContent: "end",
-  textAlign: "right",
-  justifyContent: "end",
-  width: "100%",
-}));
-
-const Input = styled("input")({
-  display: "none",
-});
 
 export default function Basics() {
   const { user, getCurrentUser } = useContext(LoginContext);

@@ -28,7 +28,7 @@ export const getTempCampaignRequest = async (userId, dispatch) => {
 };
 
 // CREATE TEMPORARY CAMPAIGN
-export const addTempCampaignRequest = async (data, photo, dispatch) => {
+export const addTempCampaignRequest = async (data, photo = {}, dispatch) => {
   // Make axios post request to create or update a temporary campaign
   try {
     // Post request to save image which returns file path
