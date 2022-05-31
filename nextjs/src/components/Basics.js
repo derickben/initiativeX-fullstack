@@ -51,22 +51,19 @@ const Input = styled("input")({
 
 export default function Basics() {
   const { user, getCurrentUser } = useContext(LoginContext);
+  const tempCampaignContext = useContext(TempCampaignContext);
   const {
     getTempCampaign,
     addTempCampaign,
     tempCampaign,
     loading: isBasicLoading,
-  } = useContext(TempCampaignContext);
+  } = tempCampaignContext;
 
   const [values, setValues] = useState({
     title: "",
     desc: "",
     categoryValue: "",
   });
-
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
 
   const [duration, setDuration] = useState(null);
   const [tagName, settagName] = useState([]);
@@ -106,14 +103,7 @@ export default function Basics() {
       category: values.categoryValue,
     };
 
-    addTempCampaign(
-      user.id,
-      data,
-      photo,
-      setError,
-      setSuccess,
-      setSnackbarOpen
-    );
+    addTempCampaign(user.id, data, photo);
   };
 
   const closeSnackbar = (event, reason) => {
@@ -121,7 +111,7 @@ export default function Basics() {
       return;
     }
 
-    setSnackbarOpen(false);
+    tempCampaignContext.closeSnackbar();
   };
 
   const { categories, isCategoryLoading } = useCategories();
@@ -296,10 +286,10 @@ export default function Basics() {
         </ButtonDiv>
       </Stack>
       <ErrorSnackbar
-        toggleSnackbar={snackbarOpen}
+        toggleSnackbar={tempCampaignContext.snackbarOpen}
         closeSnackbar={closeSnackbar}
-        errorMessage={error}
-        successMessage={success}
+        errorMessage={tempCampaignContext.error}
+        successMessage={tempCampaignContext.success}
       />
     </Box>
   );

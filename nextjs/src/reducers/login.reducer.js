@@ -5,6 +5,7 @@ import {
   LOGIN_FAILED,
   LOGIN_FAILED_NETWORK,
   REGISTER_FAILED,
+  REGISTER_FAILED_NETWORK,
   CLOSE_SNACKBAR,
   SET_LOADING_GET_CURRENT_USER,
   SET_LOADING_LOGIN,
@@ -36,7 +37,6 @@ const LoginReducer = (state, action) => {
     case LOGIN_USER:
       return {
         ...state,
-        isAuthenticated: true,
         snackbarOpen: true,
         error: { ...state.error, loginError: null },
         success: {
@@ -52,7 +52,6 @@ const LoginReducer = (state, action) => {
     case LOGIN_FAILED:
       return {
         ...state,
-        isAuthenticated: false,
         snackbarOpen: true,
         error: {
           ...state.error,
@@ -71,7 +70,6 @@ const LoginReducer = (state, action) => {
     case LOGIN_FAILED_NETWORK:
       return {
         ...state,
-        isAuthenticated: false,
         snackbarOpen: true,
         error: {
           ...state.error,
@@ -87,12 +85,55 @@ const LoginReducer = (state, action) => {
         loading: { ...state.loading, loginLoading: false },
       };
 
+    case REGISTER_FAILED:
+      return {
+        ...state,
+        snackbarOpen: true,
+        error: {
+          ...state.error,
+          registerError: {
+            alertMessage: action.payload,
+            severityValue: "error",
+          },
+        },
+        success: {
+          ...state.success,
+          registerSuccess: null,
+        },
+        loading: { ...state.loading, registerLoading: false },
+      };
+
+    case REGISTER_FAILED_NETWORK:
+      return {
+        ...state,
+        snackbarOpen: true,
+        error: {
+          ...state.error,
+          registerError: {
+            alertMessage: "Network Error",
+            severityValue: "error",
+          },
+        },
+        success: {
+          ...state.success,
+          registerSuccess: null,
+        },
+        loading: { ...state.loading, registerLoading: false },
+      };
+
     case REGISTER_USER:
       return {
         ...state,
-        isAuthenticated: true,
-        user: { ...action.payload },
-        loading: { ...state.loading, currentUser: false },
+        snackbarOpen: true,
+        error: { ...state.error, registerError: null },
+        success: {
+          ...state.success,
+          registerSuccess: {
+            alertMessage: "Registration successful!",
+            severityValue: "success",
+          },
+        },
+        loading: { ...state.loading, registerLoading: false },
       };
 
     default:

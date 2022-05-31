@@ -4,8 +4,11 @@ import {
   CURRENT_USER,
   CURRENT_USER_NULL,
   LOGIN_FAILED,
+  REGISTER_FAILED,
   LOGIN_FAILED_NETWORK,
+  REGISTER_FAILED_NETWORK,
   LOGIN_USER,
+  REGISTER_USER,
 } from "src/actions/types";
 
 // Login post request
@@ -48,17 +51,8 @@ export const loginRequest = async (loginDetails, dispatch) => {
 };
 
 // Register Post request
-export const registerRequest = async (
-  registerDetails,
-  setLoading,
-  setError,
-  setSuccess,
-  setSnackbarOpen
-) => {
+export const registerRequest = async (registerDetails, dispatch) => {
   try {
-    // Set loading to true
-    setLoading(true);
-
     // Make axios post request to register
     const response = await axios.post(
       `${API_URL}/auth/register`,
@@ -67,27 +61,13 @@ export const registerRequest = async (
     );
 
     document.cookie = `token=${response.data.token}; SameSite=None; Secure;`;
-    setError(null);
-    setSnackbarOpen(true);
-    setSuccess({
-      alertMessage: "Registration successful!",
-      severityValue: "success",
-    });
 
-    // Set Loading False
-    setLoading(false);
+    dispatch({ type: REGISTER_USER });
   } catch (error) {
-    // Set Loading False
-    setLoading(false);
-    // Set error message in UI
-    setSnackbarOpen(true);
-
-    setSuccess(null);
     if (error?.response?.data?.success === false) {
-      setError({
-        alertMessage: error.response.data.error,
-        severityValue: "error",
-      });
+      dispatch({ type: REGISTER_FAILED, payload: error.response.data.error });
+    } else {
+      dispatch({ type: REGISTER_FAILED_NETWORK });
     }
   }
 };

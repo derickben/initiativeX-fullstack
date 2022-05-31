@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
+import LoginContext from "src/context/login.context";
 import Box from "@mui/material/Box";
 import { API_URL } from "src/config";
 import InputAdornment from "@mui/material/InputAdornment";
@@ -27,6 +28,8 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 export default function FormRegister() {
+  const loginContext = useContext(LoginContext);
+
   const [values, setValues] = useState({
     firstName: "",
     lastName: "",
@@ -37,10 +40,9 @@ export default function FormRegister() {
     showPasswordConfirm: false,
   });
 
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const { registerError } = loginContext.error;
+  const { registerSuccess } = loginContext.success;
+  const { registerLoading } = loginContext.loading;
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
@@ -74,13 +76,7 @@ export default function FormRegister() {
       passwordConfirm: values.passwordConfirm,
     };
 
-    await registerRequest(
-      registerDetails,
-      setLoading,
-      setError,
-      setSuccess,
-      setSnackbarOpen
-    );
+    loginContext.registerAction(registerDetails);
   };
 
   const closeSnackbar = (event, reason) => {
@@ -88,7 +84,7 @@ export default function FormRegister() {
       return;
     }
 
-    setSnackbarOpen(false);
+    loginContext.closeSnackbar();
   };
 
   return (
@@ -254,7 +250,12 @@ export default function FormRegister() {
               </FormControl>
             </Item>
             <Item elevation={5}>
-              <Button fullWidth variant="contained" type="submit">
+              <Button
+                fullWidth
+                variant="contained"
+                type="submit"
+                disabled={registerLoading}
+              >
                 Sign Up
               </Button>
             </Item>
@@ -262,10 +263,10 @@ export default function FormRegister() {
         </Box>
       </Stack>
       <ErrorSnackbar
-        toggleSnackbar={snackbarOpen}
+        toggleSnackbar={loginContext.snackbarOpen}
         closeSnackbar={closeSnackbar}
-        errorMessage={error}
-        successMessage={success}
+        errorMessage={registerError}
+        successMessage={registerSuccess}
       />
     </Box>
   );

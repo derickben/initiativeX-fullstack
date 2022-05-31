@@ -6,6 +6,7 @@ import {
   GET_TEMP_CAMPAIGN,
   SET_LOADING_GET_TEMP_CAMPAIGN,
   SET_LOADING_ADD_TEMP_CAMPAIGN,
+  TEMP_CAMPAIGN_CLOSE_SNACKBAR,
 } from "./types";
 import {
   getTempCampaignRequest,
@@ -19,6 +20,9 @@ import TempCampaignReducer from "src/reducers/tempCampaign.reducer";
 const TempCampaignAction = (props) => {
   const campaignState = {
     tempCampaign: {},
+    error: null,
+    success: null,
+    snackbarOpen: false,
     loading: {
       getCampaign: false,
       addVideo: false,
@@ -46,14 +50,7 @@ const TempCampaignAction = (props) => {
   };
 
   // CREATE TEMPORARY CAMPAIGN
-  const addTempCampaign = async (
-    userId,
-    data,
-    photo,
-    setError,
-    setSuccess,
-    setSnackbarOpen
-  ) => {
+  const addTempCampaign = async (userId, data, photo) => {
     if (userId) {
       // Set Loading to true
       setLoading(SET_LOADING_ADD_TEMP_CAMPAIGN);
@@ -63,14 +60,7 @@ const TempCampaignAction = (props) => {
       formData.append("data", JSON.stringify(data));
 
       // Make axios post request to create or update a temporary campaign
-      await addTempCampaignRequest(
-        data,
-        photo,
-        setError,
-        setSuccess,
-        setSnackbarOpen,
-        dispatch
-      );
+      await addTempCampaignRequest(data, photo, dispatch);
 
       // Call getTempCampaign
       getTempCampaign(userId);
@@ -98,6 +88,11 @@ const TempCampaignAction = (props) => {
     dispatch({ type });
   };
 
+  // CLOSE SNACKBAR
+  const closeSnackbar = () => {
+    dispatch({ type: TEMP_CAMPAIGN_CLOSE_SNACKBAR });
+  };
+
   return (
     <TempCampaignContext.Provider
       value={{
@@ -107,6 +102,7 @@ const TempCampaignAction = (props) => {
         addTempCampaign,
         updateTempCampaign,
         deleteTempCampaign,
+        closeSnackbar,
       }}
     >
       {props.children}

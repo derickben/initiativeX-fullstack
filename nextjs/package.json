@@ -27,7 +27,8 @@
     "react": "latest",
     "react-dom": "latest",
     "slate": "^0.78.0",
-    "slate-react": "^0.79.0"
+    "slate-react": "^0.79.0",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "eslint": "latest",

@@ -39,6 +39,15 @@ const LoginAction = (props) => {
     await loginRequest(loginDetails, dispatch);
   };
 
+  // REGISTER ACTION
+  const registerAction = async (registerDetails) => {
+    // Set loading to true
+    setLoading(SET_LOADING_REGISTER);
+
+    // Make axios post request to login
+    await registerRequest(registerDetails, dispatch);
+  };
+
   // GET CURRENT USER
   const getCurrentUser = async () => {
     // Set loading to true
@@ -65,6 +74,7 @@ const LoginAction = (props) => {
         setLoading,
         closeSnackbar,
         loginAction,
+        registerAction,
         getCurrentUser,
       }}
     >

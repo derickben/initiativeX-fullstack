@@ -11,6 +11,7 @@ import Stack from "@mui/material/Stack";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
 import Faq from "./Faq";
+import FrequentlyAskedQuestion from "./FrequentlyAskedQuestion";
 
 const Item = styled("div")(({ theme }) => ({
   ...theme.typography.body2,
@@ -159,8 +160,6 @@ export default function Content() {
           </Typography>
           <TextEditor />
         </Item>
-
-        <Faq />
       </Stack>
     </Box>
   );

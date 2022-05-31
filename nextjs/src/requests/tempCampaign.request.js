@@ -4,6 +4,10 @@ import {
   GET_TEMP_CAMPAIGN,
   SET_LOADING_ADD_TEMP_CAMPAIGN,
   SET_LOADING_GET_TEMP_CAMPAIGN,
+  ADD_TEMP_CAMPAIGN_FAILED,
+  ADD_TEMP_CAMPAIGN_FAILED_NETWORK,
+  ADD_TEMP_CAMPAIGN_SUCCESS,
+  TEMP_CAMPAIGN_CLOSE_SNACKBAR,
 } from "src/actions/types";
 
 // GET TEMPORARY CAMPAIGN OF CURRENT USER
@@ -24,14 +28,7 @@ export const getTempCampaignRequest = async (userId, dispatch) => {
 };
 
 // CREATE TEMPORARY CAMPAIGN
-export const addTempCampaignRequest = async (
-  data,
-  photo,
-  setError,
-  setSuccess,
-  setSnackbarOpen,
-  dispatch
-) => {
+export const addTempCampaignRequest = async (data, photo, dispatch) => {
   // Make axios post request to create or update a temporary campaign
   try {
     // Post request to save image which returns file path
@@ -43,7 +40,6 @@ export const addTempCampaignRequest = async (
     console.log("photo", photo);
 
     if (photo.name) {
-      // Set loading to true for photo upload
       const formData = new FormData();
 
       formData.append("photo", photo);
@@ -63,36 +59,18 @@ export const addTempCampaignRequest = async (
       { withCredentials: true },
       AXIOS_OPTION()
     );
-    dispatch({ type: SET_LOADING_ADD_TEMP_CAMPAIGN });
     console.log(response.data);
-    // Set success in UI message
-    setError(null);
 
-    // Set success in UI message
-    setSnackbarOpen(true);
-    setSuccess({
-      alertMessage: "Saved successfully",
-      severityValue: "success",
-    });
+    dispatch({ type: ADD_TEMP_CAMPAIGN_SUCCESS });
   } catch (error) {
-    // Set Loading False
-    dispatch({ type: SET_LOADING_ADD_TEMP_CAMPAIGN });
-
-    // Set error message in UI
-    setSnackbarOpen(true);
-    setSuccess(null);
     if (error?.response?.data?.success === false) {
-      setError({
-        alertMessage: error.response.data.error,
-        severityValue: "error",
+      dispatch({
+        type: ADD_TEMP_CAMPAIGN_FAILED,
+        payload: error.response.data.error,
       });
     } else {
-      setError({
-        alertMessage: "Network Error",
-        severityValue: "error",
-      });
+      dispatch({ type: ADD_TEMP_CAMPAIGN_FAILED_NETWORK });
     }
-    console.log(error?.response?.data);
   }
 };
 

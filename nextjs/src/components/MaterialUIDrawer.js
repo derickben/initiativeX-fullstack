@@ -20,6 +20,7 @@ import Typography from "@mui/material/Typography";
 import Link from "src/Link";
 import Basics from "src/components/Basics";
 import Content from "src/components/Content";
+import FrequentlyAskedQuestion from "./FrequentlyAskedQuestion";
 
 const drawerWidth = 240;
 
@@ -48,7 +49,8 @@ function MaterialUIDrawer(props) {
       <List>
         {[
           { name: "Basics", link: "basics" },
-          { name: "Content", link: "content" },
+          { name: "Content", link: "contents" },
+          { name: "FAQ", link: "faqs" },
           { name: "Perks", link: "perks" },
         ].map((text, index) => (
           <ActiveLink
@@ -73,8 +75,10 @@ function MaterialUIDrawer(props) {
     switch (url) {
       case "basics":
         return <Basics />;
-      case "content":
+      case "contents":
         return <Content />;
+      case "faqs":
+        return <FrequentlyAskedQuestion />;
       case "perks":
         return <Typography paragraph>Display perks</Typography>;
       default:
