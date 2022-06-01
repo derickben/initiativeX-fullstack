@@ -1,23 +1,24 @@
 import { useState, useEffect, useContext, useCallback } from "react";
 import TempCampaignContext from "src/context/tempCampaign.context";
 import { API_URL } from "src/config";
+import ErrorSnackbar from "./ErrorSnackbar";
+import LoadingModal from "./LoadingModal";
 import LoginContext from "src/context/login.context";
 import { Item, ButtonDiv } from "src/utility/styledComp";
 import { v4 as uuidv4 } from "uuid";
-import {
-  Box,
-  Stack,
-  Button,
-  Typography,
-  IconButton,
-  TextField,
-  TextareaAutosize,
-} from "@mui/material";
+import { Box } from "@mui/material";
+import { Typography } from "@mui/material";
+import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import TextField from "@mui/material/TextField";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import TextareaAutosize from "@mui/material/TextareaAutosize";
 import InputLabel from "@mui/material/InputLabel";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import Grid from "@mui/material/Grid";
+import EditIcon from "@mui/icons-material/Edit";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import AddCircleIcon from "@mui/icons-material/AddCircle";
 import FaqLogic from "./FaqLogic";
 
 export default function FrequentlyAskedQuestion() {
@@ -37,6 +38,8 @@ export default function FrequentlyAskedQuestion() {
 
   const [faqs, setFaqs] = useState([]);
 
+  const [question, setQuestion] = useState();
+
   const [showForm, setShowForm] = useState(false);
 
   const handleChange = (prop) => (event) => {
@@ -45,31 +48,73 @@ export default function FrequentlyAskedQuestion() {
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
-    alert(`${values.question}, ${values.answer}`);
+    const newFaq = { question: values.question, answer: values.answer };
+    const data = {
+      faq: [...faqs, newFaq],
+    };
+
+    addTempCampaign(user.id, data);
+  };
+
+  const closeSnackbar = (event, reason) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    tempCampaignContext.closeSnackbar();
   };
 
   const displayFaqFromDB = () => {
-    console.log("faqs", faqs);
     return faqs.map(({ _id, question, answer }) => {
       return (
         <Item key={_id}>
           <Typography paragraph>Question</Typography>
-          <TextField
-            fullWidth
-            sx={{ mb: 4 }}
-            aria-describedby="outlined-question-helper-text"
-            id="outlined-adornment-questiont"
-            value={question}
-            onChange={handleChange("question")}
-          />
+          <Grid container spacing={2} sx={{}}>
+            <Grid item xs={11.5}>
+              <TextField
+                disabled
+                fullWidth
+                sx={{ mb: 4 }}
+                aria-describedby="outlined-question-helper-text"
+                id="outlined-adornment-questiont"
+                value={question}
+              />
+            </Grid>
+
+            <Grid item xs={0.25}>
+              <IconButton
+                sx={{ mt: -4 }}
+                color="primary"
+                aria-label="Add more faq"
+                component="span"
+              >
+                <HighlightOffIcon />
+              </IconButton>
+            </Grid>
+            <Grid item xs={0.25}>
+              <IconButton
+                sx={{ mt: -4 }}
+                color="primary"
+                aria-label="Add more faq"
+                component="span"
+              >
+                <EditIcon />
+              </IconButton>
+            </Grid>
+          </Grid>
+
           <Typography paragraph>Answer</Typography>
-          <TextareaAutosize
-            aria-label="minimum height"
-            minRows={3}
-            style={{ width: "100%", mt: 0, marginBottom: "2rem" }}
-            value={answer}
-            onChange={handleChange("answer")}
-          />
+          <Grid container spacing={2} sx={{}}>
+            <Grid item xs={11.5}>
+              <TextareaAutosize
+                aria-label="minimum height"
+                minRows={3}
+                disabled
+                style={{ width: "100%", mt: 0, marginBottom: "2rem" }}
+                value={answer}
+              />
+            </Grid>
+          </Grid>
         </Item>
       );
     });
@@ -172,12 +217,21 @@ export default function FrequentlyAskedQuestion() {
         {showForm && showFaqForm()}
         {displayForm()}
 
+        {/* LOADING MODAL COMPONENT */}
+        <LoadingModal loading={isBasicLoading} />
+
         <ButtonDiv variant="contained" type="submit">
           <Button variant="contained" type="submit">
             Save & Continue
           </Button>
         </ButtonDiv>
       </Stack>
+      <ErrorSnackbar
+        toggleSnackbar={tempCampaignContext.snackbarOpen}
+        closeSnackbar={closeSnackbar}
+        errorMessage={tempCampaignContext.error}
+        successMessage={tempCampaignContext.success}
+      />
     </Box>
   );
 }

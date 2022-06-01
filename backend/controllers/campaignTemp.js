@@ -105,6 +105,144 @@ exports.updateTempCampaign = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc    Add FAQ to a temporary campaign
+// @routes  POST /api/campaign-temp/:userId/faq/
+// @access  Private [user]
+exports.addTempCampaignFaq = asyncHandler(async (req, res, next) => {
+  let campaign;
+  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+
+  if (!campaign) {
+    return next(
+      new ErrorResponse(`No campaign with the id of ${req.params.id}`, 404)
+    );
+  }
+
+  // Check if user updating campaign is the campaign owner or admin
+  if (campaign.user.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `You are not authorized to update the campaign for user ${campaign.user}`,
+        404
+      )
+    );
+  }
+
+  const newFaq = {
+    question: req.body.question,
+    answer: req.body.answer,
+  };
+
+  // Add newFaq to end of faqs array
+  campaign.faqs.push(newFaq);
+
+  // Save
+  const newCampaign = await campaign.save();
+
+  res.status(200).json({
+    success: true,
+    data: newCampaign,
+  });
+});
+
+// @desc    Update FAQ in temporary campaign
+// @routes  PUT /api/campaign-temp/:userId/faq/:faqId
+// @access  Private [user]
+exports.updateTempCampaignFaq = asyncHandler(async (req, res, next) => {
+  let campaign;
+  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+
+  if (!campaign) {
+    return next(
+      new ErrorResponse(`No campaign with the id of ${req.params.id}`, 404)
+    );
+  }
+
+  // Check if user updating campaign is the campaign owner or admin
+  if (campaign.user.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `You are not authorized to update the campaign for user ${campaign.user}`,
+        404
+      )
+    );
+  }
+
+  // Check to see if FAQ exist
+  if (
+    campaign.faqs.filter((faq) => faq._id.toString() === req.params.faqId)
+      .length === 0
+  ) {
+    return next(
+      new ErrorResponse(`No FAQ with the id of ${req.params.faqId}`, 404)
+    );
+  }
+
+  // Get update index
+  const faqIndex = campaign.faqs
+    .map((faq) => faq._id.toString())
+    .indexOf(req.params.faqId);
+
+  // Splice faq to update array
+  const updatedFaq = campaign.faqs.splice(faqIndex, 1, req.body);
+
+  const newCampaign = await campaign.save();
+
+  res.status(200).json({
+    success: true,
+    data: { updatedFaq, faq: newCampaign.faq },
+  });
+});
+
+// @desc    Delete FAQ in temporary campaign
+// @routes  DELETE /api/campaign-temp/:userId/faq/:faqId
+// @access  Private [user]
+exports.deleteTempCampaignFaq = asyncHandler(async (req, res, next) => {
+  let campaign;
+  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+
+  if (!campaign) {
+    return next(
+      new ErrorResponse(`No campaign with the id of ${req.params.id}`, 404)
+    );
+  }
+
+  // Check if user deleting campaign is the campaign owner or admin
+  if (campaign.user.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `You are not authorized to update the campaign for user ${campaign.user}`,
+        404
+      )
+    );
+  }
+
+  // Check to see if FAQ exist
+  if (
+    campaign.faqs.filter((faq) => faq._id.toString() === req.params.faqId)
+      .length === 0
+  ) {
+    return next(
+      new ErrorResponse(`No FAQ with the id of ${req.params.id}`, 404)
+    );
+  }
+
+  // Get delete index
+  const faqIndex = campaign.faqs
+    .map((faq) => faq._id.toString())
+    .indexOf(req.params.faqId);
+
+  // Splice faq out of array
+  const deletedFaq = campaign.faqs.splice(faqIndex, 1);
+
+  const newCampaign = await campaign.save();
+
+  res.status(200).json({
+    success: true,
+    data: { deletedFaq, faq: newCampaign.faq },
+  });
+});
+
 // @desc    Delete temporary campaign
 // @routes  DELETE /api/campaigns-temp/:id
 // @access  Private [admin]

@@ -24,10 +24,16 @@ const CampaignTempSchema = new mongoose.Schema({
   amountNeeded: {
     type: Number,
   },
-  faq: [
+  faqs: [
     {
-      question: String,
-      answer: String,
+      question: {
+        type: String,
+        required: true,
+      },
+      answer: {
+        type: String,
+        required: true,
+      },
     },
   ],
   endCampaign: {
