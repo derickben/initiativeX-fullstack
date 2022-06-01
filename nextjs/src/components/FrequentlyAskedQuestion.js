@@ -1,11 +1,10 @@
 import { useState, useEffect, useContext, useCallback } from "react";
+import LoginContext from "src/context/login.context";
 import TempCampaignContext from "src/context/tempCampaign.context";
 import { API_URL } from "src/config";
 import ErrorSnackbar from "./ErrorSnackbar";
 import LoadingModal from "./LoadingModal";
-import LoginContext from "src/context/login.context";
 import { Item, ButtonDiv } from "src/utility/styledComp";
-import { v4 as uuidv4 } from "uuid";
 import { Box } from "@mui/material";
 import { Typography } from "@mui/material";
 import Stack from "@mui/material/Stack";
@@ -26,8 +25,10 @@ export default function FrequentlyAskedQuestion() {
   const tempCampaignContext = useContext(TempCampaignContext);
   const {
     getTempCampaign,
-    addTempCampaign,
+    addFaqToTempCampaign,
     tempCampaign,
+    deleteFaqInTempCampaign,
+    faqsFromContext,
     loading: isBasicLoading,
   } = tempCampaignContext;
 
@@ -38,22 +39,23 @@ export default function FrequentlyAskedQuestion() {
 
   const [faqs, setFaqs] = useState([]);
 
-  const [question, setQuestion] = useState();
-
   const [showForm, setShowForm] = useState(false);
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
   };
 
+  const handleDelete = (faqId) => (event) => {
+    deleteFaqInTempCampaign(user.id, faqId);
+  };
+
   const handleFormSubmit = (event) => {
     event.preventDefault();
-    const newFaq = { question: values.question, answer: values.answer };
-    const data = {
-      faq: [...faqs, newFaq],
-    };
+    const data = { question: values.question, answer: values.answer };
 
-    addTempCampaign(user.id, data);
+    addFaqToTempCampaign(user.id, data);
+
+    setValues({ question: "", answer: "" });
   };
 
   const closeSnackbar = (event, reason) => {
@@ -70,7 +72,7 @@ export default function FrequentlyAskedQuestion() {
         <Item key={_id}>
           <Typography paragraph>Question</Typography>
           <Grid container spacing={2} sx={{}}>
-            <Grid item xs={11.5}>
+            <Grid item xs={11}>
               <TextField
                 disabled
                 fullWidth
@@ -81,19 +83,26 @@ export default function FrequentlyAskedQuestion() {
               />
             </Grid>
 
-            <Grid item xs={0.25}>
+            <Grid
+              item
+              xs={1}
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
               <IconButton
                 sx={{ mt: -4 }}
                 color="primary"
                 aria-label="Add more faq"
                 component="span"
+                onClick={handleDelete(_id)}
               >
                 <HighlightOffIcon />
               </IconButton>
-            </Grid>
-            <Grid item xs={0.25}>
               <IconButton
-                sx={{ mt: -4 }}
+                sx={{}}
                 color="primary"
                 aria-label="Add more faq"
                 component="span"
@@ -105,7 +114,7 @@ export default function FrequentlyAskedQuestion() {
 
           <Typography paragraph>Answer</Typography>
           <Grid container spacing={2} sx={{}}>
-            <Grid item xs={11.5}>
+            <Grid item xs={11}>
               <TextareaAutosize
                 aria-label="minimum height"
                 minRows={3}
@@ -128,10 +137,10 @@ export default function FrequentlyAskedQuestion() {
   useEffect(() => {
     getCurrentUser();
     getTempCampaign(user.id);
-    if (tempCampaign._id) {
-      setFaqs(tempCampaign.faq);
+    if (tempCampaign._id && tempCampaign?.faqs) {
+      setFaqs(faqsFromContext);
     }
-  }, [tempCampaign._id, user.id]);
+  }, [tempCampaign._id, user.id, faqsFromContext.length]);
 
   const showFaqForm = () => {
     return (
@@ -171,7 +180,7 @@ export default function FrequentlyAskedQuestion() {
       }}
       method="post"
       autoComplete="off"
-      action={`${API_URL}/campaigns-temp`}
+      action={`${API_URL}/campaigns-temp/${user.id}/faq`}
       onSubmit={handleFormSubmit}
     >
       <Stack
@@ -222,7 +231,7 @@ export default function FrequentlyAskedQuestion() {
 
         <ButtonDiv variant="contained" type="submit">
           <Button variant="contained" type="submit">
-            Save & Continue
+            Add
           </Button>
         </ButtonDiv>
       </Stack>

@@ -4,9 +4,13 @@ import {
   DELETE_TEMP_CAMPAIGN,
   TEMP_CAMPAIGN_CLOSE_SNACKBAR,
   GET_TEMP_CAMPAIGN,
+  ADD_FAQ_SUCCESS,
   ADD_TEMP_CAMPAIGN_SUCCESS,
+  ADD_FAQ_FAILED,
+  ADD_FAQ_FAILED_NETWORK,
   ADD_TEMP_CAMPAIGN_FAILED,
   ADD_TEMP_CAMPAIGN_FAILED_NETWORK,
+  SET_LOADING_FAQ,
   SET_LOADING_GET_TEMP_CAMPAIGN,
   SET_LOADING_ADD_TEMP_CAMPAIGN,
 } from "src/actions/types";
@@ -25,8 +29,26 @@ const TempCampaignReducer = (state, action) => {
         loading: { ...state.loading, saveBasics: true },
       };
 
+    case SET_LOADING_FAQ:
+      return {
+        ...state,
+        loading: { ...state.loading, faq: true },
+      };
+
     case TEMP_CAMPAIGN_CLOSE_SNACKBAR:
       return { ...state, snackbarOpen: false };
+
+    case ADD_FAQ_SUCCESS:
+      return {
+        ...state,
+        snackbarOpen: true,
+        error: null,
+        success: {
+          alertMessage: action.payload,
+          severityValue: "success",
+        },
+        loading: { ...state.loading, faq: false },
+      };
 
     case ADD_TEMP_CAMPAIGN_SUCCESS:
       return {
@@ -40,6 +62,18 @@ const TempCampaignReducer = (state, action) => {
         loading: { ...state.loading, saveBasics: false },
       };
 
+    case ADD_FAQ_FAILED:
+      return {
+        ...state,
+        snackbarOpen: true,
+        success: null,
+        error: {
+          alertMessage: action.payload,
+          severityValue: "error",
+        },
+        loading: { ...state.loading, faq: false },
+      };
+
     case ADD_TEMP_CAMPAIGN_FAILED:
       return {
         ...state,
@@ -50,6 +84,18 @@ const TempCampaignReducer = (state, action) => {
           severityValue: "error",
         },
         loading: { ...state.loading, saveBasics: false },
+      };
+
+    case ADD_FAQ_FAILED_NETWORK:
+      return {
+        ...state,
+        snackbarOpen: true,
+        success: null,
+        error: {
+          alertMessage: "Network Error",
+          severityValue: "error",
+        },
+        loading: { ...state.loading, faq: false },
       };
 
     case ADD_TEMP_CAMPAIGN_FAILED_NETWORK:
@@ -68,6 +114,7 @@ const TempCampaignReducer = (state, action) => {
       return {
         ...state,
         tempCampaign: action.payload,
+        faqsFromContext: [...action.payload.faqs],
         loading: { ...state.loading, getCampaign: false },
       };
 

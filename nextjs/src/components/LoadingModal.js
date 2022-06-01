@@ -19,7 +19,7 @@ const style = {
 };
 
 export default function LoadingModal({ loading }) {
-  let isLoading = loading.getCampaign || loading.saveBasics;
+  let isLoading = loading.getCampaign || loading.saveBasics || loading.faq;
   const [open, setOpen] = useState(isLoading);
   const handleClose = () => setOpen(false);
 

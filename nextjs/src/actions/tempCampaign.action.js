@@ -4,6 +4,7 @@ import {
   EDIT_TEMP_CAMPAIGN,
   DELETE_TEMP_CAMPAIGN,
   GET_TEMP_CAMPAIGN,
+  SET_LOADING_FAQ,
   SET_LOADING_GET_TEMP_CAMPAIGN,
   SET_LOADING_ADD_TEMP_CAMPAIGN,
   TEMP_CAMPAIGN_CLOSE_SNACKBAR,
@@ -11,6 +12,9 @@ import {
 import {
   getTempCampaignRequest,
   addTempCampaignRequest,
+  addFaqToTempCampaignRequest,
+  updateFaqInTempCampaignRequest,
+  deleteFaqInTempCampaignRequest,
   updateTempCampaignRequest,
   deleteTempCampaignRequest,
 } from "src/requests/tempCampaign.request";
@@ -20,6 +24,7 @@ import TempCampaignReducer from "src/reducers/tempCampaign.reducer";
 const TempCampaignAction = (props) => {
   const campaignState = {
     tempCampaign: {},
+    faqsFromContext: [],
     error: null,
     success: null,
     snackbarOpen: false,
@@ -28,6 +33,7 @@ const TempCampaignAction = (props) => {
       addVideo: false,
       saveBasics: false,
       photo: false,
+      faq: false,
       saveContent: false,
       savePerks: false,
       update: false,
@@ -61,6 +67,48 @@ const TempCampaignAction = (props) => {
 
       // Make axios post request to create or update a temporary campaign
       await addTempCampaignRequest(data, photo, dispatch);
+
+      // Call getTempCampaign
+      getTempCampaign(userId);
+    }
+  };
+
+  // ADD TO FAQ ARRAY
+  const addFaqToTempCampaign = async (userId, data) => {
+    if (userId) {
+      // Set loading to true
+      setLoading(SET_LOADING_FAQ);
+
+      // Make axios post request to add FAQ to temporary campaign
+      await addFaqToTempCampaignRequest(userId, data, dispatch);
+
+      // Call getTempCampaign
+      getTempCampaign(userId);
+    }
+  };
+
+  // UPDATE FAQ IN ARRAY
+  const updateFaqInTempCampaign = async (userId, faqId, data) => {
+    if (userId) {
+      // Set loading to true
+      setLoading(SET_LOADING_FAQ);
+
+      // Make axios put request to update FAQ in temporary campaign
+      await updateFaqInTempCampaignRequest(userId, faqId, data, dispatch);
+
+      // Call getTempCampaign
+      getTempCampaign(userId);
+    }
+  };
+
+  // DELETE FAQ IN ARRAY
+  const deleteFaqInTempCampaign = async (userId, faqId) => {
+    if (userId) {
+      // Set loading to true
+      setLoading(SET_LOADING_FAQ);
+
+      // Make axios delete request to remove FAQ in temporary campaign
+      await deleteFaqInTempCampaignRequest(userId, faqId, dispatch);
 
       // Call getTempCampaign
       getTempCampaign(userId);
@@ -102,6 +150,9 @@ const TempCampaignAction = (props) => {
         addTempCampaign,
         updateTempCampaign,
         deleteTempCampaign,
+        addFaqToTempCampaign,
+        updateFaqInTempCampaign,
+        deleteFaqInTempCampaign,
         closeSnackbar,
       }}
     >

@@ -2,12 +2,13 @@ import axios from "axios";
 import { AXIOS_OPTION, API_URL } from "src/config";
 import {
   GET_TEMP_CAMPAIGN,
-  SET_LOADING_ADD_TEMP_CAMPAIGN,
+  ADD_FAQ_FAILED,
   SET_LOADING_GET_TEMP_CAMPAIGN,
   ADD_TEMP_CAMPAIGN_FAILED,
   ADD_TEMP_CAMPAIGN_FAILED_NETWORK,
   ADD_TEMP_CAMPAIGN_SUCCESS,
-  TEMP_CAMPAIGN_CLOSE_SNACKBAR,
+  ADD_FAQ_SUCCESS,
+  ADD_FAQ_FAILED_NETWORK,
 } from "src/actions/types";
 
 // GET TEMPORARY CAMPAIGN OF CURRENT USER
@@ -20,7 +21,6 @@ export const getTempCampaignRequest = async (userId, dispatch) => {
       AXIOS_OPTION()
     );
     dispatch({ type: GET_TEMP_CAMPAIGN, payload: response.data.data });
-    console.log("Get Temp Camp:", response.data.data);
   } catch (error) {
     dispatch({ type: SET_LOADING_GET_TEMP_CAMPAIGN });
     console.log(error);
@@ -36,8 +36,6 @@ export const addTempCampaignRequest = async (data, photo = {}, dispatch) => {
     // Add file path as path of req.body to create a temporary campaign
 
     let imageURL = null;
-
-    console.log("photo", photo);
 
     if (photo.name) {
       const formData = new FormData();
@@ -59,7 +57,6 @@ export const addTempCampaignRequest = async (data, photo = {}, dispatch) => {
       { withCredentials: true },
       AXIOS_OPTION()
     );
-    console.log(response.data);
 
     dispatch({ type: ADD_TEMP_CAMPAIGN_SUCCESS });
   } catch (error) {
@@ -74,12 +71,92 @@ export const addTempCampaignRequest = async (data, photo = {}, dispatch) => {
   }
 };
 
-// UPDATE TEMPORARY CAMPAIGN
-export const updateTempCampaignRequest = (dispatch) => {
+// ADD TO FAQ ARRAY
+export const addFaqToTempCampaignRequest = async (userId, data, dispatch) => {
+  // Make axios post request to add FAQ to temporary campaign
+  try {
+    const response = await axios.post(
+      `${API_URL}/campaigns-temp/${userId}/faq`,
+      data,
+      { withCredentials: true },
+      AXIOS_OPTION()
+    );
+
+    dispatch({ type: ADD_FAQ_SUCCESS, payload: response.data.message });
+  } catch (error) {
+    if (error?.response?.data?.success === false) {
+      dispatch({
+        type: ADD_FAQ_FAILED,
+        payload: error.response.data.error,
+      });
+    } else {
+      dispatch({ type: ADD_FAQ_FAILED_NETWORK });
+    }
+  }
+};
+
+// UPDATE FAQ IN ARRAY
+export const updateFaqInTempCampaignRequest = async (
+  userId,
+  faqId,
+  data,
+  dispatch
+) => {
+  // Make axios put request to update FAQ in temporary campaign
+  try {
+    const response = await axios.put(
+      `${API_URL}/campaigns-temp/${userId}/faq${faqId}`,
+      data,
+      { withCredentials: true },
+      AXIOS_OPTION()
+    );
+
+    dispatch({ type: ADD_FAQ_SUCCESS, payload: response.data.message });
+  } catch (error) {
+    if (error?.response?.data?.success === false) {
+      dispatch({
+        type: ADD_FAQ_FAILED,
+        payload: error.response.data.error,
+      });
+    } else {
+      dispatch({ type: ADD_FAQ_FAILED_NETWORK });
+    }
+  }
+};
+
+// DELETE FAQ IN ARRAY
+export const deleteFaqInTempCampaignRequest = async (
+  userId,
+  faqId,
+  dispatch
+) => {
+  // Make axios delete request to update FAQ in temporary campaign
+  try {
+    const response = await axios.delete(
+      `${API_URL}/campaigns-temp/${userId}/faq/${faqId}`,
+      { withCredentials: true },
+      AXIOS_OPTION()
+    );
+
+    dispatch({ type: ADD_FAQ_SUCCESS, payload: response.data.message });
+  } catch (error) {
+    if (error?.response?.data?.success === false) {
+      dispatch({
+        type: ADD_FAQ_FAILED,
+        payload: error.response.data.error,
+      });
+    } else {
+      dispatch({ type: ADD_FAQ_FAILED_NETWORK });
+    }
+  }
+};
+
+// DELETE TEMPORARY CAMPAIGN
+export const updateTempCampaignRequest = async (dispatch) => {
   // Make axios put request to update a temporary campaign
 };
 
 // DELETE TEMPORARY CAMPAIGN
-export const deleteTempCampaignRequest = (dispatch) => {
+export const deleteTempCampaignRequest = async (dispatch) => {
   // Make axios delete request to delete a temporary campaign
 };

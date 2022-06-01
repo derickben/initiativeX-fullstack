@@ -141,7 +141,8 @@ exports.addTempCampaignFaq = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    data: newCampaign,
+    message: "FAQ added successfully",
+    data: { campaign: campaign.faqs },
   });
 });
 
@@ -190,6 +191,7 @@ exports.updateTempCampaignFaq = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    message: "FAQ updated successfully",
     data: { updatedFaq, faq: newCampaign.faq },
   });
 });
@@ -239,6 +241,7 @@ exports.deleteTempCampaignFaq = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    message: "FAQ deleted successfully",
     data: { deletedFaq, faq: newCampaign.faq },
   });
 });

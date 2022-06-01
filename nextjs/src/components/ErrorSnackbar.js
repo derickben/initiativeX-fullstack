@@ -9,8 +9,6 @@ const Alert = forwardRef(function Alert(props, ref) {
 
 export default function ErrorSnackbar(props) {
   const { toggleSnackbar, closeSnackbar, errorMessage, successMessage } = props;
-  console.log("errorMessage", errorMessage);
-  console.log("successMessage", successMessage);
   const handleClose = () => {
     closeSnackbar();
   };
