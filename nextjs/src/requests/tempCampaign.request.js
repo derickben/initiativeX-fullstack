@@ -2,13 +2,15 @@ import axios from "axios";
 import { AXIOS_OPTION, API_URL } from "src/config";
 import {
   GET_TEMP_CAMPAIGN,
-  ADD_FAQ_FAILED,
+  FAQ_FAILED,
   SET_LOADING_GET_TEMP_CAMPAIGN,
   ADD_TEMP_CAMPAIGN_FAILED,
   ADD_TEMP_CAMPAIGN_FAILED_NETWORK,
   ADD_TEMP_CAMPAIGN_SUCCESS,
   ADD_FAQ_SUCCESS,
-  ADD_FAQ_FAILED_NETWORK,
+  UPDATE_FAQ_SUCCESS,
+  DELETE_FAQ_SUCCESS,
+  FAQ_FAILED_NETWORK,
 } from "src/actions/types";
 
 // GET TEMPORARY CAMPAIGN OF CURRENT USER
@@ -82,15 +84,15 @@ export const addFaqToTempCampaignRequest = async (userId, data, dispatch) => {
       AXIOS_OPTION()
     );
 
-    dispatch({ type: ADD_FAQ_SUCCESS, payload: response.data.message });
+    dispatch({ type: ADD_FAQ_SUCCESS, payload: response.data });
   } catch (error) {
     if (error?.response?.data?.success === false) {
       dispatch({
-        type: ADD_FAQ_FAILED,
+        type: FAQ_FAILED,
         payload: error.response.data.error,
       });
     } else {
-      dispatch({ type: ADD_FAQ_FAILED_NETWORK });
+      dispatch({ type: FAQ_FAILED_NETWORK });
     }
   }
 };
@@ -105,21 +107,21 @@ export const updateFaqInTempCampaignRequest = async (
   // Make axios put request to update FAQ in temporary campaign
   try {
     const response = await axios.put(
-      `${API_URL}/campaigns-temp/${userId}/faq${faqId}`,
+      `${API_URL}/campaigns-temp/${userId}/faq/${faqId}`,
       data,
       { withCredentials: true },
       AXIOS_OPTION()
     );
 
-    dispatch({ type: ADD_FAQ_SUCCESS, payload: response.data.message });
+    dispatch({ type: UPDATE_FAQ_SUCCESS, payload: response.data });
   } catch (error) {
     if (error?.response?.data?.success === false) {
       dispatch({
-        type: ADD_FAQ_FAILED,
+        type: FAQ_FAILED,
         payload: error.response.data.error,
       });
     } else {
-      dispatch({ type: ADD_FAQ_FAILED_NETWORK });
+      dispatch({ type: FAQ_FAILED_NETWORK });
     }
   }
 };
@@ -138,20 +140,20 @@ export const deleteFaqInTempCampaignRequest = async (
       AXIOS_OPTION()
     );
 
-    dispatch({ type: ADD_FAQ_SUCCESS, payload: response.data.message });
+    dispatch({ type: DELETE_FAQ_SUCCESS, payload: response.data.message });
   } catch (error) {
     if (error?.response?.data?.success === false) {
       dispatch({
-        type: ADD_FAQ_FAILED,
+        type: FAQ_FAILED,
         payload: error.response.data.error,
       });
     } else {
-      dispatch({ type: ADD_FAQ_FAILED_NETWORK });
+      dispatch({ type: FAQ_FAILED_NETWORK });
     }
   }
 };
 
-// DELETE TEMPORARY CAMPAIGN
+// UPDATE TEMPORARY CAMPAIGN
 export const updateTempCampaignRequest = async (dispatch) => {
   // Make axios put request to update a temporary campaign
 };

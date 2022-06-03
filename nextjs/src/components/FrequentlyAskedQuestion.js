@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, useCallback } from "react";
+import { useState, useEffect, useContext } from "react";
 import LoginContext from "src/context/login.context";
 import TempCampaignContext from "src/context/tempCampaign.context";
 import { API_URL } from "src/config";
@@ -13,12 +13,7 @@ import IconButton from "@mui/material/IconButton";
 import TextField from "@mui/material/TextField";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import TextareaAutosize from "@mui/material/TextareaAutosize";
-import InputLabel from "@mui/material/InputLabel";
-import OutlinedInput from "@mui/material/OutlinedInput";
-import Grid from "@mui/material/Grid";
-import EditIcon from "@mui/icons-material/Edit";
-import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import FaqLogic from "./FaqLogic";
+import FaqUpdateCard from "./FaqUpdateCard";
 
 export default function FrequentlyAskedQuestion() {
   const { user, getCurrentUser } = useContext(LoginContext);
@@ -26,8 +21,8 @@ export default function FrequentlyAskedQuestion() {
   const {
     getTempCampaign,
     addFaqToTempCampaign,
+    updateFaqInTempCampaign,
     tempCampaign,
-    deleteFaqInTempCampaign,
     faqsFromContext,
     loading: isBasicLoading,
   } = tempCampaignContext;
@@ -43,10 +38,6 @@ export default function FrequentlyAskedQuestion() {
 
   const handleChange = (prop) => (event) => {
     setValues({ ...values, [prop]: event.target.value });
-  };
-
-  const handleDelete = (faqId) => (event) => {
-    deleteFaqInTempCampaign(user.id, faqId);
   };
 
   const handleFormSubmit = (event) => {
@@ -69,62 +60,12 @@ export default function FrequentlyAskedQuestion() {
   const displayFaqFromDB = () => {
     return faqs.map(({ _id, question, answer }) => {
       return (
-        <Item key={_id}>
-          <Typography paragraph>Question</Typography>
-          <Grid container spacing={2} sx={{}}>
-            <Grid item xs={11}>
-              <TextField
-                disabled
-                fullWidth
-                sx={{ mb: 4 }}
-                aria-describedby="outlined-question-helper-text"
-                id="outlined-adornment-questiont"
-                value={question}
-              />
-            </Grid>
-
-            <Grid
-              item
-              xs={1}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-              }}
-            >
-              <IconButton
-                sx={{ mt: -4 }}
-                color="primary"
-                aria-label="Add more faq"
-                component="span"
-                onClick={handleDelete(_id)}
-              >
-                <HighlightOffIcon />
-              </IconButton>
-              <IconButton
-                sx={{}}
-                color="primary"
-                aria-label="Add more faq"
-                component="span"
-              >
-                <EditIcon />
-              </IconButton>
-            </Grid>
-          </Grid>
-
-          <Typography paragraph>Answer</Typography>
-          <Grid container spacing={2} sx={{}}>
-            <Grid item xs={11}>
-              <TextareaAutosize
-                aria-label="minimum height"
-                minRows={3}
-                disabled
-                style={{ width: "100%", mt: 0, marginBottom: "2rem" }}
-                value={answer}
-              />
-            </Grid>
-          </Grid>
-        </Item>
+        <FaqUpdateCard
+          userId={user.id}
+          faqId={_id}
+          question={question}
+          answer={answer}
+        />
       );
     });
   };

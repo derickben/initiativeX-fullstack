@@ -1,13 +1,14 @@
 import {
-  ADD_TEMP_CAMPAIGN,
   EDIT_TEMP_CAMPAIGN,
   DELETE_TEMP_CAMPAIGN,
   TEMP_CAMPAIGN_CLOSE_SNACKBAR,
   GET_TEMP_CAMPAIGN,
   ADD_FAQ_SUCCESS,
+  UPDATE_FAQ_SUCCESS,
+  DELETE_FAQ_SUCCESS,
   ADD_TEMP_CAMPAIGN_SUCCESS,
-  ADD_FAQ_FAILED,
-  ADD_FAQ_FAILED_NETWORK,
+  FAQ_FAILED,
+  FAQ_FAILED_NETWORK,
   ADD_TEMP_CAMPAIGN_FAILED,
   ADD_TEMP_CAMPAIGN_FAILED_NETWORK,
   SET_LOADING_FAQ,
@@ -41,6 +42,31 @@ const TempCampaignReducer = (state, action) => {
     case ADD_FAQ_SUCCESS:
       return {
         ...state,
+        faqsFromContext: [...action.payload.data],
+        snackbarOpen: true,
+        error: null,
+        success: {
+          alertMessage: action.payload.message,
+          severityValue: "success",
+        },
+        loading: { ...state.loading, faq: false },
+      };
+    case UPDATE_FAQ_SUCCESS:
+      return {
+        ...state,
+        faqsFromContext: [...state.faqsFromContext, action.payload.data],
+        snackbarOpen: true,
+        error: null,
+        success: {
+          alertMessage: action.payload.message,
+          severityValue: "success",
+        },
+        loading: { ...state.loading, faq: false },
+      };
+
+    case DELETE_FAQ_SUCCESS:
+      return {
+        ...state,
         snackbarOpen: true,
         error: null,
         success: {
@@ -62,7 +88,7 @@ const TempCampaignReducer = (state, action) => {
         loading: { ...state.loading, saveBasics: false },
       };
 
-    case ADD_FAQ_FAILED:
+    case FAQ_FAILED:
       return {
         ...state,
         snackbarOpen: true,
@@ -86,7 +112,7 @@ const TempCampaignReducer = (state, action) => {
         loading: { ...state.loading, saveBasics: false },
       };
 
-    case ADD_FAQ_FAILED_NETWORK:
+    case FAQ_FAILED_NETWORK:
       return {
         ...state,
         snackbarOpen: true,
