@@ -6,12 +6,18 @@ const {
   getTempCampaign,
   updateTempCampaign,
   addTempCampaignPerk,
+  addTempCampaignPerkItem,
+  addTempCampaignPerkShipping,
   addTempCampaignFaq,
   updateTempCampaignFaq,
   updateTempCampaignPerk,
+  updateTempCampaignPerkItem,
+  updateTempCampaignPerkShipping,
   deleteTempCampaignFaq,
   deleteTempCampaignPerk,
   deleteTempCampaign,
+  deleteTempCampaignPerkItem,
+  deleteTempCampaignPerkShipping,
 } = require("../controllers/campaignTemp");
 const { protect, authorize } = require("../middleware/auth");
 
@@ -39,5 +45,23 @@ router
   .route("/:userId/perk/:perkId")
   .put(protect, updateTempCampaignPerk)
   .delete(protect, deleteTempCampaignPerk);
+
+router
+  .route("/:userId/perk/:perkId/item")
+  .post(protect, addTempCampaignPerkItem);
+
+router
+  .route("/:userId/perk/:perkId/item/:itemId")
+  .put(protect, updateTempCampaignPerkItem)
+  .delete(protect, deleteTempCampaignPerkItem);
+
+router
+  .route("/:userId/perk/:perkId/ship")
+  .post(protect, addTempCampaignPerkShipping);
+
+router
+  .route("/:userId/perk/:perkId/ship/:shipId")
+  .put(protect, updateTempCampaignPerkShipping)
+  .delete(protect, deleteTempCampaignPerkShipping);
 
 module.exports = router;

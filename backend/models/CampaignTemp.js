@@ -57,27 +57,43 @@ const CampaignTempSchema = new mongoose.Schema({
     {
       amount: {
         type: Number,
+        required: true,
       },
       title: {
         type: String,
+        required: true,
       },
       items: [
         {
           itemName: {
             type: String,
+            required: true,
           },
         },
       ],
       desc: {
         type: String,
+        required: true,
       },
       image: String,
-      qtyAvailable: Number,
-      deliveryDate: Date,
+      qtyAvailable: {
+        type: Number,
+        required: true,
+      },
+      deliveryDate: {
+        type: Date,
+        required: true,
+      },
       shipping: [
         {
-          location: String,
-          fee: Number,
+          location: {
+            type: String,
+            required: true,
+          },
+          fee: {
+            type: Number,
+            required: true,
+          },
         },
       ],
     },
