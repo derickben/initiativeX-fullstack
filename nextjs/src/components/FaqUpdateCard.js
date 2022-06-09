@@ -36,8 +36,6 @@ export default function FaqUpdateCard({ userId, faqId, question, answer }) {
     setToggleFaqModal(false);
   };
 
-  useEffect(() => {}, []);
-
   return (
     <Item key={faqId}>
       <Typography paragraph>Question</Typography>

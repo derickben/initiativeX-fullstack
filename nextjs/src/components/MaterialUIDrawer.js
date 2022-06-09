@@ -21,6 +21,7 @@ import Link from "src/Link";
 import Basics from "src/components/Basics";
 import Content from "src/components/Content";
 import FrequentlyAskedQuestion from "./FrequentlyAskedQuestion";
+import Perks from "./Perks";
 
 const drawerWidth = 240;
 
@@ -80,7 +81,7 @@ function MaterialUIDrawer(props) {
       case "faqs":
         return <FrequentlyAskedQuestion />;
       case "perks":
-        return <Typography paragraph>Display perks</Typography>;
+        return <Perks />;
       default:
         break;
     }

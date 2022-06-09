@@ -23,27 +23,20 @@ import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import TextareaAutosize from "@mui/material/TextareaAutosize";
 import VisibilityRadioGroup from "./VisibilityRadioGroup";
-import PerkFromDB from "./PerkFromDB";
+import ItemPerkModal from "./ItemPerkModal";
+import ShippingRadioGroup from "./ShippingRadioGroup";
+import ShippingPerkModal from "./ShippingPerkModal";
 
-export default function Perks() {
-  const { user, getCurrentUser } = useContext(LoginContext);
-  const tempCampaignContext = useContext(TempCampaignContext);
-  const {
-    getTempCampaign,
-    addPerkToTempCampaign,
-    updatePerkInTempCampaign,
-    tempCampaign,
-    perksFromContext,
-    loading: isBasicLoading,
-  } = tempCampaignContext;
-
-  const [perks, setPerks] = useState([]);
-
-  const [showForm, setShowForm] = useState(false);
-
+export default function PerksTwo() {
   const [visibility, setVisibility] = useState("visible");
 
+  const [shipping, setShipping] = useState(false);
+
   const [duration, setDuration] = useState(null);
+
+  const [toggleItemModal, setToggleItemModal] = useState(false);
+
+  const [toggleShippingModal, setToggleShippingModal] = useState(false);
 
   const [values, setValues] = useState({
     price: "",
@@ -56,56 +49,66 @@ export default function Perks() {
     setValues({ ...values, [prop]: event.target.value });
   };
 
+  const handleAddItemClick = (event) => {
+    setToggleItemModal(true);
+  };
+
+  const handleAddShippingClick = (event) => {
+    setToggleShippingModal(true);
+  };
+
+  const handleAddItemSubmit = (value) => {
+    // call action to add item to campaign
+    setToggleItemModal(false);
+  };
+
+  const handleAddShippingSubmit = (value) => {
+    // call action to add shipping to campaign
+    setToggleShippingModal(false);
+  };
+
+  const closeItemModal = () => {
+    setToggleItemModal(false);
+  };
+
+  const closeShippingModal = () => {
+    setToggleShippingModal(false);
+  };
+
   const handleDurationChange = (newValue) => {
     setDuration(newValue);
-  };
-
-  const closeSnackbar = (event, reason) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    tempCampaignContext.closeSnackbar();
-  };
-
-  const displayPerkFromDB = () => {
-    return perks.map(
-      ({ _id, title, price, desc, qtyAvailable, duration: durationDB }) => {
-        return (
-          <PerkFromDB
-            userId={user.id}
-            perkId={_id}
-            title={title}
-            price={price}
-            desc={desc}
-            qtyAvailable={qtyAvailable}
-            duration={durationDB}
-          />
-        );
-      }
-    );
   };
 
   const handleVisibility = (event) => {
     setVisibility(event.target.value);
   };
 
-  const handleClick = (event) => {
-    event.preventDefault();
-    setShowForm(!showForm);
+  const handleShipping = (event) => {
+    setShipping(!shipping);
   };
+  return (
+    <Box
+      component="form"
+      sx={{
+        width: "80%",
+      }}
+      method="post"
+      autoComplete="off"
+    >
+      <Stack
+        direction="column"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        spacing={7}
+      >
+        <Item>
+          <Typography variant="h4">Perk Details</Typography>
+          <Typography paragraph={true}>
+            Perks are incentives offered to backers in exchange for their
+            support. Make sure your perks are not prohibited.
+          </Typography>
+        </Item>
 
-  useEffect(() => {
-    getCurrentUser();
-    getTempCampaign(user.id);
-    if (tempCampaign._id && tempCampaign?.perks) {
-      setPerks(perksFromContext);
-    }
-  }, [tempCampaign._id, user.id, perksFromContext.length]);
-
-  const showPerkForm = () => {
-    return (
-      <Item>
         <Item>
           <Typography variant="h5" component="div" gutterBottom>
             Visibility
@@ -159,6 +162,35 @@ export default function Perks() {
             aria-describedby="outlined-question-helper-text"
             id="outlined-adornment-questiont"
           />
+        </Item>
+
+        <Item>
+          <Typography variant="h5" component="div" gutterBottom>
+            Included Items *
+          </Typography>
+          <Typography paragraph>
+            Add the items included in this perk. Items could be physical,
+            digital, experiences, or even just a thank you. Specify item
+            quantity and add additional items to create bundles.
+          </Typography>
+          <IconButton
+            sx={{ mt: 0 }}
+            color="primary"
+            aria-label="Add more faq"
+            component="span"
+            onClick={handleAddItemClick}
+          >
+            <Typography
+              paragraph
+              sx={{
+                display: "flex",
+                justifyContent: "start",
+                alignItems: "center",
+              }}
+            >
+              <ModeEditIcon sx={{ mr: 2 }} /> ADD ITEM
+            </Typography>
+          </IconButton>
         </Item>
 
         <Item>
@@ -256,78 +288,52 @@ export default function Perks() {
           {/* DATE PICKER COMPONENT */}
           <Date value={duration} handleChange={handleDurationChange} />
         </Item>
-      </Item>
-    );
-  };
 
-  const displayForm = () => {
-    if (perks.length == 0) {
-      return showPerkForm();
-    }
-  };
-
-  return (
-    <Box
-      component="form"
-      sx={{
-        width: "80%",
-      }}
-      method="post"
-      autoComplete="off"
-    >
-      <Stack
-        direction="column"
-        justifyContent="flex-start"
-        alignItems="flex-start"
-        spacing={7}
-      >
         <Item>
-          <Typography variant="h4">Perk Details</Typography>
-          <Typography paragraph={true}>
-            Perks are incentives offered to backers in exchange for their
-            support. Make sure your perks are not prohibited.
+          <Typography variant="h4" gutterBottom>
+            Shipping
           </Typography>
-        </Item>
+          <Typography paragraph={true}>
+            Does this perk contain items that you need to ship?
+          </Typography>
+          <ShippingRadioGroup
+            shipping={shipping}
+            handleShipping={handleShipping}
+          />
 
-        {perks.length > 0 && displayPerkFromDB()}
-        {perks.length > 0 && (
-          <IconButton
-            sx={{ mt: -4 }}
-            color="primary"
-            aria-label="Add more perk"
-            component="span"
-            onClick={handleClick}
-          >
-            <Typography
-              paragraph
-              sx={{
-                display: "flex",
-                justifyContent: "start",
-                alignItems: "center",
-              }}
+          {shipping && (
+            <IconButton
+              sx={{ mt: 0 }}
+              color="primary"
+              aria-label="Add more faq"
+              component="div"
+              onClick={handleAddShippingClick}
             >
-              <AddCircleIcon sx={{ mr: 2 }} /> ADD NEW PERK
-            </Typography>
-          </IconButton>
-        )}
-
-        {showForm && showPerkForm()}
-        {displayForm()}
-
-        {/* LOADING MODAL COMPONENT */}
-        <LoadingModal loading={isBasicLoading} />
-
-        <ButtonDiv variant="contained" type="submit">
-          <Button variant="contained" type="submit">
-            Add
-          </Button>
-        </ButtonDiv>
+              <Typography
+                paragraph
+                sx={{
+                  display: "flex",
+                  justifyContent: "start",
+                  alignItems: "center",
+                }}
+              >
+                <ModeEditIcon sx={{ mr: 2 }} /> ADD LOCATION
+              </Typography>
+            </IconButton>
+          )}
+        </Item>
       </Stack>
-      <ErrorSnackbar
-        toggleSnackbar={tempCampaignContext.snackbarOpen}
-        closeSnackbar={closeSnackbar}
-        errorMessage={tempCampaignContext.error}
-        successMessage={tempCampaignContext.success}
+
+      <ItemPerkModal
+        toggleItemModal={toggleItemModal}
+        closeItemModal={closeItemModal}
+        handleAddItemSubmit={handleAddItemSubmit}
+      />
+
+      <ShippingPerkModal
+        toggleShippingModal={toggleShippingModal}
+        closeShippingModal={closeShippingModal}
+        handleAddShippingSubmit={handleAddShippingSubmit}
       />
     </Box>
   );

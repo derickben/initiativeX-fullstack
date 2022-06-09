@@ -28,7 +28,6 @@ export default function FaqUpdateModal(props) {
 
   const handleSubmit = (event) => {
     handleUpdateSubmit(values);
-    // alert(values.answer);
   };
 
   useEffect(() => {

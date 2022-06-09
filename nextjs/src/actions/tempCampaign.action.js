@@ -8,14 +8,18 @@ import {
   SET_LOADING_GET_TEMP_CAMPAIGN,
   SET_LOADING_ADD_TEMP_CAMPAIGN,
   TEMP_CAMPAIGN_CLOSE_SNACKBAR,
+  SET_LOADING_PERK,
 } from "./types";
 import {
   getTempCampaignRequest,
   addTempCampaignRequest,
   addFaqToTempCampaignRequest,
+  addPerkToTempCampaignRequest,
   updateFaqInTempCampaignRequest,
   deleteFaqInTempCampaignRequest,
   updateTempCampaignRequest,
+  updatePerkInTempCampaignRequest,
+  deletePerkInTempCampaignRequest,
   deleteTempCampaignRequest,
 } from "src/requests/tempCampaign.request";
 import TempCampaignContext from "src/context/tempCampaign.context";
@@ -25,6 +29,7 @@ const TempCampaignAction = (props) => {
   const campaignState = {
     tempCampaign: {},
     faqsFromContext: [],
+    perksFromContext: [],
     error: null,
     success: null,
     snackbarOpen: false,
@@ -34,6 +39,7 @@ const TempCampaignAction = (props) => {
       saveBasics: false,
       photo: false,
       faq: false,
+      perk: false,
       saveContent: false,
       savePerks: false,
       update: false,
@@ -72,6 +78,8 @@ const TempCampaignAction = (props) => {
       getTempCampaign(userId);
     }
   };
+
+  // FAQ
 
   // ADD TO FAQ ARRAY
   const addFaqToTempCampaign = async (userId, data) => {
@@ -115,6 +123,50 @@ const TempCampaignAction = (props) => {
     }
   };
 
+  // PERKS
+
+  // ADD TO PERK ARRAY
+  const addPerkToTempCampaign = async (userId, data) => {
+    if (userId) {
+      // Set loading to true
+      setLoading(SET_LOADING_PERK);
+
+      // Make axios post request to add PERK to temporary campaign
+      await addPerkToTempCampaignRequest(userId, data, dispatch);
+
+      // Call getTempCampaign
+      getTempCampaign(userId);
+    }
+  };
+
+  // UPDATE PERK IN ARRAY
+  const updatePerkInTempCampaign = async (userId, perkId, data) => {
+    if (userId) {
+      // Set loading to true
+      setLoading(SET_LOADING_PERK);
+
+      // Make axios put request to update PERK in temporary campaign
+      await updatePerkInTempCampaignRequest(userId, perkId, data, dispatch);
+
+      // Call getTempCampaign
+      getTempCampaign(userId);
+    }
+  };
+
+  // DELETE PERK IN ARRAY
+  const deletePerkInTempCampaign = async (userId, perkId) => {
+    if (userId) {
+      // Set loading to true
+      setLoading(SET_LOADING_PERK);
+
+      // Make axios delete request to remove PERK in temporary campaign
+      await deletePerkInTempCampaignRequest(userId, perkId, dispatch);
+
+      // Call getTempCampaign
+      getTempCampaign(userId);
+    }
+  };
+
   // UPDATE TEMPORARY CAMPAIGN
   const updateTempCampaign = async () => {
     // Set Loading to true
@@ -151,8 +203,11 @@ const TempCampaignAction = (props) => {
         updateTempCampaign,
         deleteTempCampaign,
         addFaqToTempCampaign,
+        addPerkToTempCampaign,
         updateFaqInTempCampaign,
+        updatePerkInTempCampaign,
         deleteFaqInTempCampaign,
+        deletePerkInTempCampaign,
         closeSnackbar,
       }}
     >

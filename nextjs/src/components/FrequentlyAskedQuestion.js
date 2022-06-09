@@ -21,7 +21,6 @@ export default function FrequentlyAskedQuestion() {
   const {
     getTempCampaign,
     addFaqToTempCampaign,
-    updateFaqInTempCampaign,
     tempCampaign,
     faqsFromContext,
     loading: isBasicLoading,
@@ -159,7 +158,7 @@ export default function FrequentlyAskedQuestion() {
                 alignItems: "center",
               }}
             >
-              <AddCircleIcon sx={{ mr: 4 }} /> ADD ANOTHER QUESTION
+              <AddCircleIcon sx={{ mr: 2 }} /> ADD ANOTHER QUESTION
             </Typography>
           </IconButton>
         )}

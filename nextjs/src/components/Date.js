@@ -15,22 +15,13 @@ const Item = styled("div")(({ theme }) => ({
 
 export default function Date({ value, handleChange }) {
   return (
-    <Item>
-      <Typography variant="h5" component="div" gutterBottom>
-        Campaign Duration *
-      </Typography>
-      <Typography paragraph>
-        How many days will you be running your campaign for? You can run a
-        campaign for any number of days, with a 60 day duration maximum.
-      </Typography>
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <DatePicker
-          label="Days"
-          value={value}
-          onChange={handleChange}
-          renderInput={(params) => <TextField {...params} />}
-        />
-      </LocalizationProvider>
-    </Item>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <DatePicker
+        label="Days"
+        value={value}
+        onChange={handleChange}
+        renderInput={(params) => <TextField {...params} />}
+      />
+    </LocalizationProvider>
   );
 }

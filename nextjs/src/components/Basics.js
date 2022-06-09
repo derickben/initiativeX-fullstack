@@ -19,7 +19,6 @@ import { Typography } from "@mui/material";
 import CategorySelect from "./CategorySelect";
 import TagSelect from "./TagSelect";
 import Date from "./Date";
-
 import LoadingModal from "./LoadingModal";
 import ProgressBar from "./ProgressBar";
 import ErrorSnackbar from "./ErrorSnackbar";
@@ -253,8 +252,18 @@ export default function Basics() {
           tagName={tagName}
         />
 
-        {/* DATE PICKER COMPONENT */}
-        <Date value={duration} handleChange={handleDurationChange} />
+        <Item>
+          <Typography variant="h5" component="div" gutterBottom>
+            Campaign Duration *
+          </Typography>
+          <Typography paragraph>
+            How many days will you be running your campaign for? You can run a
+            campaign for any number of days, with a 60 day duration maximum.
+          </Typography>
+
+          {/* DATE PICKER COMPONENT */}
+          <Date value={duration} handleChange={handleDurationChange} />
+        </Item>
 
         {/* LOADING MODAL COMPONENT */}
         <LoadingModal loading={isBasicLoading} />
