@@ -1,6 +1,7 @@
 const CampaignTemp = require("../models/CampaignTemp");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
+const { listeners } = require("../models/CampaignTemp");
 
 // @desc    Get all temporary campaigns
 // @routes  GET /api/campaigns-temp/
@@ -281,7 +282,7 @@ exports.addTempCampaignPerk = asyncHandler(async (req, res, next) => {
   }
 
   const newPerk = {
-    amount: req.body.amount,
+    price: req.body.price,
     title: req.body.title,
     desc: req.body.desc,
     qtyAvailable: req.body.qtyAvailable,
@@ -409,6 +410,54 @@ exports.deleteTempCampaignPerk = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc    Get all items in all perks
+// @routes  GET /api/campaigns-temp/:userId/perk/all/items
+// @access  Private [user]
+exports.getTempCampaignAllPerkItems = asyncHandler(async (req, res, next) => {
+  let campaign;
+  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+
+  if (!campaign) {
+    return next(
+      new ErrorResponse(
+        `No campaign belonging to user ${req.params.userId}`,
+        404
+      )
+    );
+  }
+
+  // Check if user updating campaign is the campaign owner or admin
+  if (campaign.user.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `You are not authorized to update the campaign for user ${campaign.user}`,
+        404
+      )
+    );
+  }
+
+  // Check to see if PERK exist
+  if (campaign.perks.length === 0) {
+    return next(new ErrorResponse(`${req.params.userId} has no perk yet`, 404));
+  }
+
+  // Get all items in all perks
+  const itemsInAllPerks = campaign.perks.map((perk) => {
+    return { perkId: perk._id.toString(), items: perk.items || [] };
+  });
+  // Get all items in all perks
+  let allItems = campaign.perks.map((perk) => {
+    return perk.items || [];
+  });
+
+  allItems = [].concat.apply([], allItems);
+
+  res.status(200).json({
+    success: true,
+    data: { itemsInAllPerks, allItems },
+  });
+});
+
 // @desc    Add item to perk in temporary campaign
 // @routes  POST /api/campaign-temp/:userId/perk/:perkId/item
 // @access  Private [user]
@@ -460,12 +509,22 @@ exports.addTempCampaignPerkItem = asyncHandler(async (req, res, next) => {
   // Save
   await campaign.save();
 
-  const allItems = campaign.perks[perkIndex].items;
+  // Get all items in all perks
+  const itemsInAllPerks = campaign.perks.map((perk) => {
+    return { perkId: perk._id.toString(), items: perk.items || [] };
+  });
+
+  // Get all items in all perks
+  let allItems = campaign.perks.map((perk) => {
+    return perk.items || [];
+  });
+
+  allItems = [].concat.apply([], allItems);
 
   res.status(200).json({
     success: true,
     message: "Item added to PERKS successfully",
-    data: allItems,
+    data: { itemsInAllPerks, allItems },
   });
 });
 
@@ -531,12 +590,24 @@ exports.updateTempCampaignPerkItem = asyncHandler(async (req, res, next) => {
     req.body
   );
 
-  const newCampaign = await campaign.save();
+  await campaign.save();
+
+  // Get all items in all perks
+  const itemsInAllPerks = campaign.perks.map((perk) => {
+    return { perkId: perk._id.toString(), items: perk.items || [] };
+  });
+
+  // Get all items in all perks
+  let allItems = campaign.perks.map((perk) => {
+    return perk.items || [];
+  });
+
+  allItems = [].concat.apply([], allItems);
 
   res.status(200).json({
     success: true,
     message: "Item in Perks updated successfully",
-    data: { updatedItem, items: newCampaign.perks[perkIndex].items },
+    data: { updatedItem, items: itemsInAllPerks, allItems },
   });
 });
 
@@ -600,10 +671,66 @@ exports.deleteTempCampaignPerkItem = asyncHandler(async (req, res, next) => {
 
   const newCampaign = await campaign.save();
 
+  // Get all items in all perks
+  let allItems = campaign.perks.map((perk) => {
+    return perk.items || [];
+  });
+
+  allItems = [].concat.apply([], allItems);
+
   res.status(200).json({
     success: true,
     message: "ITEM in Perks deleted successfully",
-    data: { deletedItem, items: newCampaign.perks[perkIndex].items },
+    data: { deletedItem, items: newCampaign.perks[perkIndex].items, allItems },
+  });
+});
+
+// @desc    Get all shipping in a single perk array
+// @routes  GET /api/campaigns-temp/:userId/perk/:perkId/ship
+// @access  Private [user]
+exports.getTempCampaignPerkShipping = asyncHandler(async (req, res, next) => {
+  let campaign;
+  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+
+  if (!campaign) {
+    return next(
+      new ErrorResponse(
+        `No campaign belonging to user ${req.params.userId}`,
+        404
+      )
+    );
+  }
+
+  // Check if user updating campaign is the campaign owner or admin
+  if (campaign.user.toString() !== req.user.id && req.user.role !== "admin") {
+    return next(
+      new ErrorResponse(
+        `You are not authorized to update the campaign for user ${campaign.user}`,
+        404
+      )
+    );
+  }
+
+  // Check to see if PERK exist
+  if (
+    campaign.perks.filter((perk) => perk._id.toString() === req.params.perkId)
+      .length === 0
+  ) {
+    return next(
+      new ErrorResponse(`No PERK with the id of ${req.params.perkId}`, 404)
+    );
+  }
+
+  // Get perk index
+  const perkIndex = campaign.perks
+    .map((perk) => perk._id.toString())
+    .indexOf(req.params.perkId);
+
+  const allShipping = campaign.perks[perkIndex].shipping;
+
+  res.status(200).json({
+    success: true,
+    data: allShipping,
   });
 });
 

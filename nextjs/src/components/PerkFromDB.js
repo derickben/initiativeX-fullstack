@@ -1,52 +1,184 @@
 import { useState, useEffect, useContext } from "react";
-import { Item } from "src/utility/styledComp";
+import { Item, StyledTableCell, StyledTableRow } from "src/utility/styledComp";
 import TempCampaignContext from "src/context/tempCampaign.context";
+import AddBoxIcon from "@mui/icons-material/AddBox";
 import TextareaAutosize from "@mui/material/TextareaAutosize";
 import { Typography } from "@mui/material";
 import Grid from "@mui/material/Grid";
-import TextField from "@mui/material/TextField";
+import ListItem from "@mui/material/ListItem";
+import List from "@mui/material/List";
+import ListItemText from "@mui/material/ListItemText";
+import ShippingPerkModal from "./ShippingPerkModal";
 import IconButton from "@mui/material/IconButton";
 import EditIcon from "@mui/icons-material/Edit";
 import HighlightOffIcon from "@mui/icons-material/HighlightOff";
-import FaqUpdateModal from "./FaqUpdateModal";
+import PerkUpdateModal from "./PerkUpdateModal";
+import ItemPerkModal from "./ItemPerkModal";
+import ItemsFromDB from "./ItemsFromDB";
 
-export default function PerkFromDB(props) {
+export default function PerkFromDB({ perk, perkId, userId }) {
   const tempCampaignContext = useContext(TempCampaignContext);
-  const { deletePerkInTempCampaign, updatePerkInTempCampaign } =
-    tempCampaignContext;
+  const {
+    getAllItemsFromAllPerks,
+    deletePerkInTempCampaign,
+    updatePerkInTempCampaign,
+    itemsFromContext,
+    allItems,
+    addItemToTempCampaign,
+    addShipToTempCampaign,
+  } = tempCampaignContext;
+
+  const [items, setItems] = useState([]);
+  const [shipping, setshipping] = useState([]);
+
+  const [toggleItemModal, setToggleItemModal] = useState(false);
 
   const [togglePerkModal, setTogglePerkModal] = useState(false);
 
-  const { userId, perkId, title } = props;
+  const [toggleShippingModal, setToggleShippingModal] = useState(false);
+
+  const handleAddShippingClick = (event) => {
+    setToggleShippingModal(true);
+  };
+
+  const handleAddShippingSubmit = (value) => {
+    // call action to add shipping to campaign
+    setToggleShippingModal(false);
+  };
+
+  const closeShippingModal = () => {
+    setToggleShippingModal(false);
+  };
 
   const handleDelete = (perkId) => (event) => {
-    deleteFaqInTempCampaign(userId, perkId);
+    deletePerkInTempCampaign(userId, perkId);
+  };
+
+  const handleAddItemClick = (event) => {
+    setToggleItemModal(true);
+  };
+
+  const handleAddItemSubmit = (data) => {
+    // call action to add item to campaign
+    addItemToTempCampaign(userId, perkId, data);
+    setToggleItemModal(false);
+  };
+
+  const closeItemModal = () => {
+    setToggleItemModal(false);
   };
 
   const handleUpdateClick = (event) => {
-    setToggleFaqModal(true);
+    setTogglePerkModal(true);
   };
 
   const handleUpdateSubmit = (data) => {
-    updateFaqInTempCampaign(userId, perkId, data);
-    setToggleFaqModal(false);
+    updatePerkInTempCampaign(userId, perkId, data);
+    setTogglePerkModal(false);
   };
 
-  const closeFaqModal = () => {
-    setToggleFaqModal(false);
+  const closePerkModal = () => {
+    setTogglePerkModal(false);
   };
+
+  const displayItemsFromDB = () => {
+    const itemsForEachPerk = items.filter((item) => item.perkId === perkId);
+
+    return (
+      <div>
+        {itemsForEachPerk[0].items.map((x) => (
+          <ItemsFromDB
+            itemName={x.itemName}
+            userId={userId}
+            perkId={perkId}
+            itemId={x._id}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  useEffect(() => {
+    getAllItemsFromAllPerks(userId);
+    if (itemsFromContext.length > 0) {
+      setItems(itemsFromContext);
+    }
+  }, [userId, perkId, allItems.length, itemsFromContext.length]);
 
   return (
-    <Item key={perkId}>
-      <Typography paragraph>Title</Typography>
-      <TextField
-        disabled
-        fullWidth
-        sx={{ mb: 4 }}
-        aria-describedby="outlined-question-helper-text"
-        id="outlined-adornment-questiont"
-        value={title}
+    <StyledTableRow sx={{ textAlign: "center" }}>
+      <StyledTableCell component="th" scope="row">
+        {perk.title.substr(0, 20)}
+      </StyledTableCell>
+      <StyledTableCell>{perk.desc.substr(0, 20) + " ..."}</StyledTableCell>
+      <StyledTableCell>{perk.price}</StyledTableCell>
+      <StyledTableCell>{perk.qtyAvailable}</StyledTableCell>
+      <StyledTableCell>{perk.deliveryDate}</StyledTableCell>
+      <StyledTableCell align="center">
+        <IconButton
+          sx={{}}
+          color="primary"
+          aria-label="Add Item"
+          component="span"
+          onClick={handleAddItemClick}
+        >
+          <AddBoxIcon fontSize="large" />
+        </IconButton>
+
+        {items.length > 0 && displayItemsFromDB()}
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        <IconButton
+          sx={{}}
+          color="primary"
+          aria-label="Add Shipping"
+          component="span"
+          onClick={handleAddShippingClick}
+        >
+          <AddBoxIcon fontSize="large" />
+        </IconButton>
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        <IconButton
+          sx={{}}
+          color="primary"
+          aria-label="Update Perk"
+          component="span"
+          onClick={handleUpdateClick}
+        >
+          <EditIcon />
+        </IconButton>
+      </StyledTableCell>
+      <StyledTableCell align="right">
+        <IconButton
+          sx={{}}
+          color="primary"
+          aria-label="Delete Perk"
+          component="span"
+          onClick={handleDelete(perk._id)}
+        >
+          <HighlightOffIcon fontSize="large" />
+        </IconButton>
+      </StyledTableCell>
+
+      <ItemPerkModal
+        toggleItemModal={toggleItemModal}
+        closeItemModal={closeItemModal}
+        handleAddItemSubmit={handleAddItemSubmit}
       />
-    </Item>
+
+      <ShippingPerkModal
+        toggleShippingModal={toggleShippingModal}
+        closeShippingModal={closeShippingModal}
+        handleAddShippingSubmit={handleAddShippingSubmit}
+      />
+
+      <PerkUpdateModal
+        togglePerkModal={togglePerkModal}
+        closePerkModal={closePerkModal}
+        handleUpdateSubmit={handleUpdateSubmit}
+        perk={perk}
+      />
+    </StyledTableRow>
   );
 }

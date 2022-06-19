@@ -4,6 +4,8 @@ const {
   getTempCampaigns,
   createTempCampaign,
   getTempCampaign,
+  getTempCampaignAllPerkItems,
+  getTempCampaignPerkShipping,
   updateTempCampaign,
   addTempCampaignPerk,
   addTempCampaignPerkItem,
@@ -47,21 +49,26 @@ router
   .delete(protect, deleteTempCampaignPerk);
 
 router
+  .route("/:userId/perk/all/items")
+  .get(protect, authorize("admin", "user"), getTempCampaignAllPerkItems);
+
+router
   .route("/:userId/perk/:perkId/item")
-  .post(protect, addTempCampaignPerkItem);
+  .post(protect, authorize("admin", "user"), addTempCampaignPerkItem);
 
 router
   .route("/:userId/perk/:perkId/item/:itemId")
-  .put(protect, updateTempCampaignPerkItem)
-  .delete(protect, deleteTempCampaignPerkItem);
+  .put(protect, authorize("admin", "user"), updateTempCampaignPerkItem)
+  .delete(protect, authorize("admin", "user"), deleteTempCampaignPerkItem);
 
 router
   .route("/:userId/perk/:perkId/ship")
-  .post(protect, addTempCampaignPerkShipping);
+  .get(protect, authorize("admin", "user"), getTempCampaignPerkShipping)
+  .post(protect, authorize("admin", "user"), addTempCampaignPerkShipping);
 
 router
   .route("/:userId/perk/:perkId/ship/:shipId")
-  .put(protect, updateTempCampaignPerkShipping)
-  .delete(protect, deleteTempCampaignPerkShipping);
+  .put(protect, authorize("admin", "user"), updateTempCampaignPerkShipping)
+  .delete(protect, authorize("admin", "user"), deleteTempCampaignPerkShipping);
 
 module.exports = router;

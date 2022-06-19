@@ -4,14 +4,25 @@ import TempCampaignContext from "src/context/tempCampaign.context";
 import Date from "./Date";
 import { API_URL } from "src/config";
 import ErrorSnackbar from "./ErrorSnackbar";
-import Paper from "@mui/material/Paper";
 import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
 import OutlinedInput from "@mui/material/OutlinedInput";
 import InputLabel from "@mui/material/InputLabel";
 import Divider from "@mui/material/Divider";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell, { tableCellClasses } from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
 import LoadingModal from "./LoadingModal";
-import { Item, ButtonDiv, Input } from "src/utility/styledComp";
+import {
+  Item,
+  ButtonDiv,
+  Input,
+  StyledTableCell,
+} from "src/utility/styledComp";
 import { Box } from "@mui/material";
 import { Typography } from "@mui/material";
 import IconButton from "@mui/material/IconButton";
@@ -19,7 +30,6 @@ import Stack from "@mui/material/Stack";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
-import ModeEditIcon from "@mui/icons-material/ModeEdit";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import TextareaAutosize from "@mui/material/TextareaAutosize";
 import VisibilityRadioGroup from "./VisibilityRadioGroup";
@@ -60,6 +70,26 @@ export default function Perks() {
     setDuration(newValue);
   };
 
+  const handleFormSubmit = (event) => {
+    event.preventDefault();
+    const data = {
+      deliveryDate: duration,
+      price: values.price,
+      title: values.title,
+      desc: values.desc,
+      qtyAvailable: values.qtyAvailable,
+    };
+
+    addPerkToTempCampaign(user.id, data);
+
+    setValues({
+      price: "",
+      title: "",
+      desc: "",
+      qtyAvailable: "",
+    });
+  };
+
   const closeSnackbar = (event, reason) => {
     if (reason === "clickaway") {
       return;
@@ -68,21 +98,35 @@ export default function Perks() {
     tempCampaignContext.closeSnackbar();
   };
 
-  const displayPerkFromDB = () => {
-    return perks.map(
-      ({ _id, title, price, desc, qtyAvailable, duration: durationDB }) => {
-        return (
-          <PerkFromDB
-            userId={user.id}
-            perkId={_id}
-            title={title}
-            price={price}
-            desc={desc}
-            qtyAvailable={qtyAvailable}
-            duration={durationDB}
-          />
-        );
-      }
+  const displayPerksFromDB = () => {
+    return (
+      <TableContainer component={Paper}>
+        <Table sx={{ minWidth: 900 }} aria-label="customized table">
+          <TableHead>
+            <TableRow>
+              <StyledTableCell>Title</StyledTableCell>
+              <StyledTableCell align="center">Description</StyledTableCell>
+              <StyledTableCell align="center">Price</StyledTableCell>
+              <StyledTableCell align="center">Quantity</StyledTableCell>
+              <StyledTableCell align="center">Delivery Date</StyledTableCell>
+              <StyledTableCell align="center">Items</StyledTableCell>
+              <StyledTableCell align="center">Shipping</StyledTableCell>
+              <StyledTableCell align="center">Edit</StyledTableCell>
+              <StyledTableCell align="center">Delete</StyledTableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {perks.map((perk) => (
+              <PerkFromDB
+                perk={perk}
+                userId={user.id}
+                key={perk._id}
+                perkId={perk._id}
+              />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
     );
   };
 
@@ -105,7 +149,12 @@ export default function Perks() {
 
   const showPerkForm = () => {
     return (
-      <Item>
+      <Stack
+        direction="column"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        spacing={7}
+      >
         <Item>
           <Typography variant="h5" component="div" gutterBottom>
             Visibility
@@ -256,7 +305,7 @@ export default function Perks() {
           {/* DATE PICKER COMPONENT */}
           <Date value={duration} handleChange={handleDurationChange} />
         </Item>
-      </Item>
+      </Stack>
     );
   };
 
@@ -274,6 +323,8 @@ export default function Perks() {
       }}
       method="post"
       autoComplete="off"
+      action={`${API_URL}/campaigns-temp/${user.id}/perk`}
+      onSubmit={handleFormSubmit}
     >
       <Stack
         direction="column"
@@ -289,7 +340,7 @@ export default function Perks() {
           </Typography>
         </Item>
 
-        {perks.length > 0 && displayPerkFromDB()}
+        {perks.length > 0 && displayPerksFromDB()}
         {perks.length > 0 && (
           <IconButton
             sx={{ mt: -4 }}
@@ -319,7 +370,7 @@ export default function Perks() {
 
         <ButtonDiv variant="contained" type="submit">
           <Button variant="contained" type="submit">
-            Add
+            Add Perk
           </Button>
         </ButtonDiv>
       </Stack>

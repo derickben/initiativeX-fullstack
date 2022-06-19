@@ -35,7 +35,10 @@ export default function ShippingPerkModal(props) {
       <Dialog open={toggleShippingModal} onClose={handleClose} fullWidth>
         <DialogTitle>SHIPPING</DialogTitle>
         <DialogContent>
-          <Typography paragraph sx={{ mb: 0 }}>
+          <DialogContentText>
+            Does this perk contain items that you need to ship?
+          </DialogContentText>
+          <Typography paragraph sx={{ mt: 2 }}>
             Location *
           </Typography>
           <TextField

@@ -22,6 +22,7 @@ import Basics from "src/components/Basics";
 import Content from "src/components/Content";
 import FrequentlyAskedQuestion from "./FrequentlyAskedQuestion";
 import Perks from "./Perks";
+import PerksTwo from "./PerksTwo";
 
 const drawerWidth = 240;
 

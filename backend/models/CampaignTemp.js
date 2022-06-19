@@ -55,7 +55,7 @@ const CampaignTempSchema = new mongoose.Schema({
   },
   perks: [
     {
-      amount: {
+      price: {
         type: Number,
         required: true,
       },

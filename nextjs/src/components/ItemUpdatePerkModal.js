@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Button from "@mui/material/Button";
 import { Typography } from "@mui/material";
 import TextField from "@mui/material/TextField";
@@ -8,10 +8,10 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 
-export default function ItemPerkModal(props) {
-  const toggleItemModal = props.toggleItemModal;
-  const closeItemModal = props.closeItemModal;
-  const handleAddItemSubmit = props.handleAddItemSubmit;
+export default function ItemUpdatePerkModal(props) {
+  const toggleItemUpdateModal = props.toggleItemUpdateModal;
+  const closeItemUpdateModal = props.closeItemUpdateModal;
+  const handleUpdateItemSubmit = props.handleUpdateItemSubmit;
 
   const [value, setValue] = useState({
     itemName: "",
@@ -22,17 +22,20 @@ export default function ItemPerkModal(props) {
   };
 
   const handleClose = () => {
-    closeItemModal();
+    closeItemUpdateModal();
   };
 
   const handleSubmit = (event) => {
-    handleAddItemSubmit(value);
-    setValue({ itemName: "" });
+    handleUpdateItemSubmit(value);
   };
+
+  useEffect(() => {
+    setValue({ itemName: props.itemName });
+  }, []);
 
   return (
     <div>
-      <Dialog open={toggleItemModal} onClose={handleClose} fullWidth>
+      <Dialog open={toggleItemUpdateModal} onClose={handleClose} fullWidth>
         <DialogTitle>Included Items *</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -57,7 +60,7 @@ export default function ItemPerkModal(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleSubmit}>Add</Button>
+          <Button onClick={handleSubmit}>Update</Button>
         </DialogActions>
       </Dialog>
     </div>

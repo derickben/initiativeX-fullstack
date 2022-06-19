@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import { Item } from "src/utility/styledComp";
 import TempCampaignContext from "src/context/tempCampaign.context";
 import TextareaAutosize from "@mui/material/TextareaAutosize";
@@ -63,7 +63,7 @@ export default function FaqUpdateCard({ userId, faqId, question, answer }) {
           <IconButton
             sx={{ mt: -4 }}
             color="primary"
-            aria-label="Add more faq"
+            aria-label="Delete faq"
             component="span"
             onClick={handleDelete(faqId)}
           >
@@ -72,7 +72,7 @@ export default function FaqUpdateCard({ userId, faqId, question, answer }) {
           <IconButton
             sx={{}}
             color="primary"
-            aria-label="Add more faq"
+            aria-label="Update faq"
             component="span"
             onClick={handleUpdateClick}
           >
