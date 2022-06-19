@@ -81,21 +81,34 @@ export default function PerkFromDB({ perk, perkId, userId }) {
     setTogglePerkModal(false);
   };
 
+  const displayTitle = (title) => {
+    if (title) return title.substr(0, 20);
+
+    return title;
+  };
+
+  const displayDesc = (desc) => {
+    if (desc) return desc.substr(0, 20) + " ...";
+
+    return desc;
+  };
+
   const displayItemsFromDB = () => {
     const itemsForEachPerk = items.filter((item) => item.perkId === perkId);
 
-    return (
-      <div>
-        {itemsForEachPerk[0].items.map((x) => (
-          <ItemsFromDB
-            itemName={x.itemName}
-            userId={userId}
-            perkId={perkId}
-            itemId={x._id}
-          />
-        ))}
-      </div>
-    );
+    if (itemsForEachPerk[0])
+      return (
+        <div>
+          {itemsForEachPerk[0].items.map((x) => (
+            <ItemsFromDB
+              itemName={x.itemName}
+              userId={userId}
+              perkId={perkId}
+              itemId={x._id}
+            />
+          ))}
+        </div>
+      );
   };
 
   useEffect(() => {
@@ -108,9 +121,9 @@ export default function PerkFromDB({ perk, perkId, userId }) {
   return (
     <StyledTableRow sx={{ textAlign: "center" }}>
       <StyledTableCell component="th" scope="row">
-        {perk.title.substr(0, 20)}
+        {displayTitle(perk.title)}
       </StyledTableCell>
-      <StyledTableCell>{perk.desc.substr(0, 20) + " ..."}</StyledTableCell>
+      <StyledTableCell>{displayDesc(perk.desc)}</StyledTableCell>
       <StyledTableCell>{perk.price}</StyledTableCell>
       <StyledTableCell>{perk.qtyAvailable}</StyledTableCell>
       <StyledTableCell>{perk.deliveryDate}</StyledTableCell>
