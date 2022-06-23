@@ -32,6 +32,8 @@ export default function Content() {
     videoLink: "",
   });
 
+  // const [story, setStory] = useState({})
+
   const [urlError, setUrlError] = useState(null);
 
   const handleChange = (prop) => (event) => {

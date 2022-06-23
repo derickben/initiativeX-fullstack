@@ -52,7 +52,7 @@ export default function ItemsFromDB(props) {
       <IconButton
         sx={{}}
         color="primary"
-        aria-label="Delete Perk"
+        aria-label="Delete Item"
         component="span"
         onClick={handleDelete(props.itemId)}
       >

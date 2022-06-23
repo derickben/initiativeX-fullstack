@@ -19,10 +19,16 @@ const CampaignTempSchema = new mongoose.Schema({
   tags: [String],
   videoLink: {
     type: String,
+    match: [
+      /^(https?\:\/\/)?((www\.)?youtube\.com|youtu\.be)\/.+$/,
+      "Please enter a valid YouTube URL",
+    ],
   },
   story: Object,
   amountNeeded: {
     type: Number,
+    min: [500000, "You cannot raise lower than 500,000 Naira"],
+    default: 500000,
   },
   faqs: [
     {
@@ -40,7 +46,11 @@ const CampaignTempSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  isCompleted: {
+  hasCampaignEnded: {
+    type: Boolean,
+    default: false,
+  },
+  areAllFieldsComplete: {
     type: Boolean,
     default: false,
   },
@@ -55,25 +65,29 @@ const CampaignTempSchema = new mongoose.Schema({
   },
   perks: [
     {
+      visibility: {
+        type: Boolean,
+        default: true,
+      },
       price: {
         type: Number,
-        required: true,
+        required: [true, "Enter an amount"],
       },
       title: {
         type: String,
-        required: true,
+        required: [true, "Enter a perk title"],
       },
       items: [
         {
           itemName: {
             type: String,
-            required: true,
+            required: [true, "Enter the name of the item"],
           },
         },
       ],
       desc: {
         type: String,
-        required: true,
+        required: [true, "Enter a description for your perk"],
       },
       image: String,
       qtyAvailable: {
@@ -84,7 +98,7 @@ const CampaignTempSchema = new mongoose.Schema({
         type: Date,
         required: true,
       },
-      shipping: [
+      shippings: [
         {
           location: {
             type: String,
@@ -96,6 +110,22 @@ const CampaignTempSchema = new mongoose.Schema({
           },
         },
       ],
+    },
+  ],
+  backers: [
+    {
+      name: {
+        type: String,
+        required: [true, "Enter your full name"],
+      },
+      email: {
+        type: String,
+        required: [true, "Enter your email"],
+        match: [
+          /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+          "Please add a valid email",
+        ],
+      },
     },
   ],
   user: {

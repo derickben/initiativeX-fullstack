@@ -61,15 +61,18 @@ app.use("/api/donate", donate);
 
 app.use(errorHandler);
 
-const runCheckToKnowIfACampaignIsCompleted = async () => {
+const runCheckToKnowIfACampaignhasEnded = async () => {
   let now = new Date();
-  const Campaign = require("./models/Campaign");
-  const testCron = await Campaign.find({ duration: { $lte: new Date() } });
+  const Campaign = require("./models/CampaignTemp");
+  const testCron = await Campaign.find({
+    duration: { $lte: new Date() },
+    areAllFieldsComplete: true,
+  });
   console.log(testCron);
   if (testCron.length > 0) {
     await Campaign.updateMany(
       { duration: { $lte: now } },
-      { $set: { isCompleted: true } }
+      { $set: { hasCampaignEnded: true } }
     );
   }
 };
@@ -78,7 +81,7 @@ const job = new CronJob(
   "0 * * * *",
   function () {
     console.log("CRON job started successfully");
-    runCheckToKnowIfACampaignIsCompleted();
+    runCheckToKnowIfACampaignhasEnded();
   },
   null,
   true,

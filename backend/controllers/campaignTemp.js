@@ -1,7 +1,6 @@
 const CampaignTemp = require("../models/CampaignTemp");
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
-const { listeners } = require("../models/CampaignTemp");
 
 // @desc    Get all temporary campaigns
 // @routes  GET /api/campaigns-temp/
@@ -19,7 +18,10 @@ exports.getTempCampaigns = asyncHandler(async (req, res, next) => {
 // @routes  GET /api/campaigns-temp/:id
 // @access  Private [user]
 exports.getTempCampaign = asyncHandler(async (req, res, next) => {
-  const campaign = await CampaignTemp.findOne({ user: req.params.id });
+  const campaign = await CampaignTemp.findOne({
+    user: req.params.id,
+    areAllFieldsComplete: false,
+  });
 
   if (!campaign) {
     return next(
@@ -40,7 +42,10 @@ exports.createTempCampaign = asyncHandler(async (req, res, next) => {
   // Add logged in user to req.body
   req.body.user = req.user.id;
 
-  let existingTempCampaign = await CampaignTemp.findOne({ user: req.user.id });
+  let existingTempCampaign = await CampaignTemp.findOne({
+    user: req.user.id,
+    areAllFieldsComplete: false,
+  });
 
   // Check if the user has a temporary campaign already created
 
@@ -69,12 +74,123 @@ exports.createTempCampaign = asyncHandler(async (req, res, next) => {
   }
 });
 
-// @desc    Update temporary campaign
+// @desc Mark a temporary campaign complete
+// @routes  POST /api/campaigns-temp/complete
+// @access  Private [user]
+exports.completeTempCampaign = asyncHandler(async (req, res, next) => {
+  let campaign;
+  campaign = await CampaignTemp.findOne({
+    user: req.user.id,
+    areAllFieldsComplete: false,
+  });
+
+  if (!campaign) {
+    return next(
+      new ErrorResponse(`No campaign belonging to the user ${req.user.id}`, 404)
+    );
+  }
+
+  // Run check to see if all the required fields have been completed
+
+  const {
+    title,
+    photo,
+    desc,
+    category,
+    tags,
+    videoLink,
+    story,
+    amountNeeded,
+    faqs,
+    duration,
+    perks,
+  } = campaign;
+
+  // Validate Basics
+  if (
+    !title ||
+    !desc ||
+    !amountNeeded ||
+    !photo ||
+    !category ||
+    !tags ||
+    !duration
+  ) {
+    return next(
+      new ErrorResponse(
+        `Please complete all mandatory fields in the 'Basics' Section`,
+        400
+      )
+    );
+  }
+
+  // Validate Content
+  if (!videoLink) {
+    return next(
+      new ErrorResponse(
+        `Please complete all mandatory fields in the 'Content' Section`,
+        400
+      )
+    );
+  }
+
+  // Validate Faq
+  if (faqs.length < 1) {
+    return next(
+      new ErrorResponse(
+        `Please you must include a Frequently asked question`,
+        400
+      )
+    );
+  }
+
+  // Validate Perk
+  if (perks.length < 1) {
+    return next(
+      new ErrorResponse(
+        `Please complete all mandatory fields in the 'Perk' Section`,
+        400
+      )
+    );
+  }
+
+  // Validate items in Perk
+  const isNotEmpty = (currentItem) => currentItem.items.length > 0;
+
+  const itemIsNotEmpty = perks.every(isNotEmpty);
+
+  if (!itemIsNotEmpty)
+    return next(
+      new ErrorResponse(
+        `Please you must include an Item to all existing perks`,
+        400
+      )
+    );
+
+  campaign = await CampaignTemp.findOneAndUpdate(
+    {
+      user: req.user.id,
+      areAllFieldsComplete: false,
+    },
+    { areAllFieldsComplete: true },
+    { new: true, runValidators: true }
+  );
+
+  res.status(200).json({
+    success: true,
+    data: campaign,
+  });
+});
+
+// @desc    Update complete campaign
 // @routes  PUT /api/campaign-temp/:id
 // @access  Private [user]
 exports.updateTempCampaign = asyncHandler(async (req, res, next) => {
   let campaign;
-  campaign = await CampaignTemp.findById(req.params.id);
+  campaign = await CampaignTemp.findOne({
+    _id: req.params.id,
+    areAllFieldsComplete: true,
+  });
 
   if (!campaign) {
     return next(
@@ -108,7 +224,10 @@ exports.updateTempCampaign = asyncHandler(async (req, res, next) => {
 // @access  Private [user]
 exports.addTempCampaignFaq = asyncHandler(async (req, res, next) => {
   let campaign;
-  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+  campaign = await CampaignTemp.findOne({
+    user: req.params.userId,
+    areAllFieldsComplete: false,
+  });
 
   if (!campaign) {
     return next(
@@ -154,7 +273,10 @@ exports.addTempCampaignFaq = asyncHandler(async (req, res, next) => {
 // @access  Private [user]
 exports.updateTempCampaignFaq = asyncHandler(async (req, res, next) => {
   let campaign;
-  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+  campaign = await CampaignTemp.findOne({
+    user: req.params.userId,
+    areAllFieldsComplete: false,
+  });
 
   if (!campaign) {
     return next(
@@ -207,7 +329,10 @@ exports.updateTempCampaignFaq = asyncHandler(async (req, res, next) => {
 // @access  Private [user]
 exports.deleteTempCampaignFaq = asyncHandler(async (req, res, next) => {
   let campaign;
-  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+  campaign = await CampaignTemp.findOne({
+    user: req.params.userId,
+    areAllFieldsComplete: false,
+  });
 
   if (!campaign) {
     return next(
@@ -260,7 +385,10 @@ exports.deleteTempCampaignFaq = asyncHandler(async (req, res, next) => {
 // @access  Private [user]
 exports.addTempCampaignPerk = asyncHandler(async (req, res, next) => {
   let campaign;
-  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+  campaign = await CampaignTemp.findOne({
+    user: req.params.userId,
+    areAllFieldsComplete: false,
+  });
 
   if (!campaign) {
     return next(
@@ -309,7 +437,10 @@ exports.addTempCampaignPerk = asyncHandler(async (req, res, next) => {
 // @access  Private [user]
 exports.updateTempCampaignPerk = asyncHandler(async (req, res, next) => {
   let campaign;
-  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+  campaign = await CampaignTemp.findOne({
+    user: req.params.userId,
+    areAllFieldsComplete: false,
+  });
 
   if (!campaign) {
     return next(
@@ -362,7 +493,10 @@ exports.updateTempCampaignPerk = asyncHandler(async (req, res, next) => {
 // @access  Private [user]
 exports.deleteTempCampaignPerk = asyncHandler(async (req, res, next) => {
   let campaign;
-  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+  campaign = await CampaignTemp.findOne({
+    user: req.params.userId,
+    areAllFieldsComplete: false,
+  });
 
   if (!campaign) {
     return next(
@@ -415,7 +549,10 @@ exports.deleteTempCampaignPerk = asyncHandler(async (req, res, next) => {
 // @access  Private [user]
 exports.getTempCampaignAllPerkItems = asyncHandler(async (req, res, next) => {
   let campaign;
-  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+  campaign = await CampaignTemp.findOne({
+    user: req.params.userId,
+    areAllFieldsComplete: false,
+  });
 
   if (!campaign) {
     return next(
@@ -463,7 +600,10 @@ exports.getTempCampaignAllPerkItems = asyncHandler(async (req, res, next) => {
 // @access  Private [user]
 exports.addTempCampaignPerkItem = asyncHandler(async (req, res, next) => {
   let campaign;
-  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+  campaign = await CampaignTemp.findOne({
+    user: req.params.userId,
+    areAllFieldsComplete: false,
+  });
 
   if (!campaign) {
     return next(
@@ -533,7 +673,10 @@ exports.addTempCampaignPerkItem = asyncHandler(async (req, res, next) => {
 // @access  Private [user]
 exports.updateTempCampaignPerkItem = asyncHandler(async (req, res, next) => {
   let campaign;
-  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+  campaign = await CampaignTemp.findOne({
+    user: req.params.userId,
+    areAllFieldsComplete: false,
+  });
 
   if (!campaign) {
     return next(
@@ -616,7 +759,10 @@ exports.updateTempCampaignPerkItem = asyncHandler(async (req, res, next) => {
 // @access  Private [user]
 exports.deleteTempCampaignPerkItem = asyncHandler(async (req, res, next) => {
   let campaign;
-  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+  campaign = await CampaignTemp.findOne({
+    user: req.params.userId,
+    areAllFieldsComplete: false,
+  });
 
   if (!campaign) {
     return next(
@@ -685,61 +831,71 @@ exports.deleteTempCampaignPerkItem = asyncHandler(async (req, res, next) => {
   });
 });
 
-// @desc    Get all shipping in a single perk array
-// @routes  GET /api/campaigns-temp/:userId/perk/:perkId/ship
+// @desc    Get all shippings in all perks
+// @routes  GET /api/campaigns-temp/:userId/perk/all/shippings
 // @access  Private [user]
-exports.getTempCampaignPerkShipping = asyncHandler(async (req, res, next) => {
-  let campaign;
-  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+exports.getTempCampaignAllPerkShippings = asyncHandler(
+  async (req, res, next) => {
+    let campaign;
+    campaign = await CampaignTemp.findOne({
+      user: req.params.userId,
+      areAllFieldsComplete: false,
+    });
 
-  if (!campaign) {
-    return next(
-      new ErrorResponse(
-        `No campaign belonging to user ${req.params.userId}`,
-        404
-      )
-    );
+    if (!campaign) {
+      return next(
+        new ErrorResponse(
+          `No campaign belonging to user ${req.params.userId}`,
+          404
+        )
+      );
+    }
+
+    // Check if user updating campaign is the campaign owner or admin
+    if (campaign.user.toString() !== req.user.id && req.user.role !== "admin") {
+      return next(
+        new ErrorResponse(
+          `You are not authorized to update the campaign for user ${campaign.user}`,
+          404
+        )
+      );
+    }
+
+    // Check to see if PERK exist
+    if (campaign.perks.length === 0) {
+      return next(
+        new ErrorResponse(`${req.params.userId} has no perk yet`, 404)
+      );
+    }
+
+    // Get all shippings in all perks
+    const shippingsInAllPerks = campaign.perks.map((perk) => {
+      return { perkId: perk._id.toString(), shippings: perk.shippings || [] };
+    });
+
+    // Get all shippings in all perks
+    let allShippings = campaign.perks.map((perk) => {
+      return perk.shippings || [];
+    });
+
+    allShippings = [].concat.apply([], allShippings);
+
+    res.status(200).json({
+      success: true,
+      data: { shippingsInAllPerks, allShippings },
+    });
   }
-
-  // Check if user updating campaign is the campaign owner or admin
-  if (campaign.user.toString() !== req.user.id && req.user.role !== "admin") {
-    return next(
-      new ErrorResponse(
-        `You are not authorized to update the campaign for user ${campaign.user}`,
-        404
-      )
-    );
-  }
-
-  // Check to see if PERK exist
-  if (
-    campaign.perks.filter((perk) => perk._id.toString() === req.params.perkId)
-      .length === 0
-  ) {
-    return next(
-      new ErrorResponse(`No PERK with the id of ${req.params.perkId}`, 404)
-    );
-  }
-
-  // Get perk index
-  const perkIndex = campaign.perks
-    .map((perk) => perk._id.toString())
-    .indexOf(req.params.perkId);
-
-  const allShipping = campaign.perks[perkIndex].shipping;
-
-  res.status(200).json({
-    success: true,
-    data: allShipping,
-  });
-});
+);
 
 // @desc    Add shipping to perk in temporary campaign
-// @routes  POST /api/campaign-temp/:userId/perk/:perkId/ship
+// @routes  POST /api/campaign-temp/:userId/perk/:perkId/shipping
 // @access  Private [user]
 exports.addTempCampaignPerkShipping = asyncHandler(async (req, res, next) => {
   let campaign;
-  campaign = await CampaignTemp.findOne({ user: req.params.userId });
+  campaign = await CampaignTemp.findOne({
+    user: req.params.userId,
+    areAllFieldsComplete: false,
+  });
 
   if (!campaign) {
     return next(
@@ -781,27 +937,40 @@ exports.addTempCampaignPerkShipping = asyncHandler(async (req, res, next) => {
   };
 
   // Add newShipping to end of shipping array in perks array
-  campaign.perks[perkIndex].shipping.push(newShipping);
+  campaign.perks[perkIndex].shippings.push(newShipping);
 
   // Save
   await campaign.save();
 
-  const allShipping = campaign.perks[perkIndex].shipping;
+  // Get all shippings in all perks
+  const shippingsInAllPerks = campaign.perks.map((perk) => {
+    return { perkId: perk._id.toString(), shippings: perk.shippings || [] };
+  });
+
+  // Get all shippings in all perks
+  let allShippings = campaign.perks.map((perk) => {
+    return perk.shippings || [];
+  });
+
+  allShippings = [].concat.apply([], allShippings);
 
   res.status(200).json({
     success: true,
     message: "SHIPPING added to PERKS successfully",
-    data: allShipping,
+    data: { shippingsInAllPerks, allShippings },
   });
 });
 
 // @desc    Update shipping in perk in temporary campaign
-// @routes  PUT /api/campaign-temp/:userId/perk/:perkId/ship/shipId
+// @routes  PUT /api/campaign-temp/:userId/perk/:perkId/shipping/shipId
 // @access  Private [user]
 exports.updateTempCampaignPerkShipping = asyncHandler(
   async (req, res, next) => {
     let campaign;
-    campaign = await CampaignTemp.findOne({ user: req.params.userId });
+    campaign = await CampaignTemp.findOne({
+      user: req.params.userId,
+      areAllFieldsComplete: false,
+    });
 
     if (!campaign) {
       return next(
@@ -838,7 +1007,7 @@ exports.updateTempCampaignPerkShipping = asyncHandler(
 
     // Check to see if SHIPPING exist inside perk
     if (
-      campaign.perks[perkIndex].shipping.filter(
+      campaign.perks[perkIndex].shippings.filter(
         (ship) => ship._id.toString() === req.params.shipId
       ).length === 0
     ) {
@@ -850,37 +1019,53 @@ exports.updateTempCampaignPerkShipping = asyncHandler(
       );
     }
     // Get shipping index
-    const shipIndex = campaign.perks[perkIndex].shipping
+    const shipIndex = campaign.perks[perkIndex].shippings
       .map((ship) => ship._id.toString())
       .indexOf(req.params.shipId);
 
     // Splice shipping to update array
-    const updatedShipping = campaign.perks[perkIndex].shipping.splice(
+    const updatedShipping = campaign.perks[perkIndex].shippings.splice(
       shipIndex,
       1,
       req.body
     );
 
-    const newCampaign = await campaign.save();
+    await campaign.save();
+
+    // Get all shippings in all perks
+    const shippingsInAllPerks = campaign.perks.map((perk) => {
+      return { perkId: perk._id.toString(), shippings: perk.shippings || [] };
+    });
+
+    // Get all shippings in all perks
+    let allShippings = campaign.perks.map((perk) => {
+      return perk.shippings || [];
+    });
+
+    allShippings = [].concat.apply([], allShippings);
 
     res.status(200).json({
       success: true,
-      message: "SIPPING in Perks updated successfully",
+      message: "SHIPPING in Perks updated successfully",
       data: {
         updatedShipping,
-        shipping: newCampaign.perks[perkIndex].shipping,
+        shippings: shippingsInAllPerks,
+        allShippings,
       },
     });
   }
 );
 
 // @desc    Delete shipping in perk in temporary campaign
-// @routes  DELETE /api/campaign-temp/:userId/perk/:perkId/ship/shipId
+// @routes  DELETE /api/campaign-temp/:userId/perk/:perkId/shipping/shipId
 // @access  Private [user]
 exports.deleteTempCampaignPerkShipping = asyncHandler(
   async (req, res, next) => {
     let campaign;
-    campaign = await CampaignTemp.findOne({ user: req.params.userId });
+    campaign = await CampaignTemp.findOne({
+      user: req.params.userId,
+      areAllFieldsComplete: false,
+    });
 
     if (!campaign) {
       return next(
@@ -917,7 +1102,7 @@ exports.deleteTempCampaignPerkShipping = asyncHandler(
 
     // Check to see if SHIPPING exist inside perk
     if (
-      campaign.perks[perkIndex].shipping.filter(
+      campaign.perks[perkIndex].shippings.filter(
         (ship) => ship._id.toString() === req.params.shipId
       ).length === 0
     ) {
@@ -929,24 +1114,32 @@ exports.deleteTempCampaignPerkShipping = asyncHandler(
       );
     }
     // Get shipping index
-    const shipIndex = campaign.perks[perkIndex].shipping
+    const shipIndex = campaign.perks[perkIndex].shippings
       .map((ship) => ship._id.toString())
       .indexOf(req.params.shipId);
 
     // Splice shipping out of array
-    const deletedShipping = campaign.perks[perkIndex].shipping.splice(
+    const deletedShipping = campaign.perks[perkIndex].shippings.splice(
       shipIndex,
       1
     );
 
     const newCampaign = await campaign.save();
 
+    // Get all shippings in all perks
+    let allShippings = campaign.perks.map((perk) => {
+      return perk.shippings || [];
+    });
+
+    allShippings = [].concat.apply([], allShippings);
+
     res.status(200).json({
       success: true,
       message: "SHIPPING in Perks deleted successfully",
       data: {
         deletedShipping,
-        shipping: newCampaign.perks[perkIndex].shipping,
+        shippings: newCampaign.perks[perkIndex].shippings,
+        allShippings,
       },
     });
   }

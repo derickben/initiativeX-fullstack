@@ -3,8 +3,8 @@ import {
   DELETE_TEMP_CAMPAIGN,
   TEMP_CAMPAIGN_CLOSE_SNACKBAR,
   GET_TEMP_CAMPAIGN,
-  GET_ALL_ITEMS,
-  GET_ALL_SHIPPINGS,
+  GET_ALL_ITEMS_FROM_ALL_PERKS,
+  GET_ALL_SHIPPINGS_FROM_ALL_PERKS,
   ADD_FAQ_SUCCESS,
   ADD_PERK_SUCCESS,
   ADD_ITEM_SUCCESS,
@@ -36,7 +36,6 @@ import {
   SET_LOADING_GET_ALL_ITEMS,
   SET_LOADING_GET_ALL_SHIPPING,
   SET_LOADING_ADD_TEMP_CAMPAIGN,
-  GET_ALL_ITEMS_FROM_ALL_PERKS,
 } from "src/actions/types";
 
 const TempCampaignReducer = (state, action) => {
@@ -56,7 +55,10 @@ const TempCampaignReducer = (state, action) => {
     case SET_LOADING_GET_ALL_SHIPPING:
       return {
         ...state,
-        loading: { ...state.loading, getItems: !state.loading.getItems },
+        loading: {
+          ...state.loading,
+          getShippings: !state.loading.getShippings,
+        },
       };
 
     case SET_LOADING_ADD_TEMP_CAMPAIGN:
@@ -295,18 +297,19 @@ const TempCampaignReducer = (state, action) => {
       };
 
     // SHIPPING
-    case GET_ALL_SHIPPINGS:
+    case GET_ALL_SHIPPINGS_FROM_ALL_PERKS:
       return {
         ...state,
-        tempCampaign: action.payload,
-        shippingsFromContext: [...action.payload],
-        loading: { ...state.loading, getShipping: false },
+        shippingsFromContext: [...action.payload.data.shippingsInAllPerks],
+        allShippings: [...action.payload.data.allShippings],
+        loading: { ...state.loading, getShippings: false },
       };
 
     case ADD_SHIP_SUCCESS:
       return {
         ...state,
-        shippingsFromContext: [...action.payload.data],
+        shippingsFromContext: [...action.payload.data.shippingsInAllPerks],
+        allShippings: [...action.payload.data.allShippings],
         snackbarOpen: true,
         error: null,
         success: {
@@ -321,8 +324,9 @@ const TempCampaignReducer = (state, action) => {
         ...state,
         shippingsFromContext: [
           ...state.shippingsFromContext,
-          action.payload.data,
+          action.payload.data.updatedShipping,
         ],
+        allShippings: [...action.payload.data.allShippings],
         snackbarOpen: true,
         error: null,
         success: {
@@ -338,7 +342,7 @@ const TempCampaignReducer = (state, action) => {
         snackbarOpen: true,
         error: null,
         success: {
-          alertMessage: action.payload,
+          alertMessage: action.payload.message,
           severityValue: "success",
         },
         loading: { ...state.loading, ship: false },

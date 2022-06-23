@@ -26,11 +26,10 @@ import {
   SHIP_FAILED_NETWORK,
   UPDATE_SHIP_SUCCESS,
   DELETE_SHIP_SUCCESS,
-  GET_ALL_ITEMS,
-  GET_ALL_SHIPPINGS,
   SET_LOADING_GET_ALL_SHIPPING,
   SET_LOADING_GET_ALL_ITEMS,
   GET_ALL_ITEMS_FROM_ALL_PERKS,
+  GET_ALL_SHIPPINGS_FROM_ALL_PERKS,
 } from "src/actions/types";
 
 // GET TEMPORARY CAMPAIGN OF CURRENT USER
@@ -366,16 +365,19 @@ export const deleteItemInTempCampaignRequest = async (
 
 // SHIPPING
 
-// GET ALL SHIPPING IN A PERK ARRAY OF CURRENT USER
-export const getAllShippingsRequest = async (userId, perkId, dispatch) => {
+// GET ALL SHIPPING IN ALL PERKS OF CURRENT USER
+export const getAllShippingsFromAllPerksRequest = async (userId, dispatch) => {
   // Make axios get request to get all shippings in a perk array and send to reducer
   try {
     const response = await axios.get(
-      `${API_URL}/campaigns-temp/${userId}/perk/${perkId}/ship`,
+      `${API_URL}/campaigns-temp/${userId}/perk/all/shippings`,
       { withCredentials: true },
       AXIOS_OPTION()
     );
-    dispatch({ type: GET_ALL_SHIPPINGS, payload: response.data.data });
+    dispatch({
+      type: GET_ALL_SHIPPINGS_FROM_ALL_PERKS,
+      payload: response.data,
+    });
   } catch (error) {
     dispatch({ type: SET_LOADING_GET_ALL_SHIPPING });
     console.log(error);
@@ -392,7 +394,7 @@ export const addShipToTempCampaignRequest = async (
   // Make axios post request to add SHIPPING to PERK ARRAY
   try {
     const response = await axios.post(
-      `${API_URL}/campaigns-temp/${userId}/perk/${perkId}/ship`,
+      `${API_URL}/campaigns-temp/${userId}/perk/${perkId}/shipping`,
       data,
       { withCredentials: true },
       AXIOS_OPTION()
@@ -422,7 +424,7 @@ export const updateShipInTempCampaignRequest = async (
   // Make axios put request to update SHIPPING in PERK ARRAY
   try {
     const response = await axios.put(
-      `${API_URL}/campaigns-temp/${userId}/perk/${perkId}/ship/${shipId}`,
+      `${API_URL}/campaigns-temp/${userId}/perk/${perkId}/shipping/${shipId}`,
       data,
       { withCredentials: true },
       AXIOS_OPTION()
@@ -451,12 +453,12 @@ export const deleteShipInTempCampaignRequest = async (
   // Make axios delete request to remove SHIPPING from PERK ARRAY
   try {
     const response = await axios.delete(
-      `${API_URL}/campaigns-temp/${userId}/perk/${perkId}/ship/${shipId}`,
+      `${API_URL}/campaigns-temp/${userId}/perk/${perkId}/shipping/${shipId}`,
       { withCredentials: true },
       AXIOS_OPTION()
     );
 
-    dispatch({ type: DELETE_SHIP_SUCCESS, payload: response.data.message });
+    dispatch({ type: DELETE_SHIP_SUCCESS, payload: response.data });
   } catch (error) {
     if (error?.response?.data?.success === false) {
       dispatch({

@@ -22,10 +22,6 @@ const CampaignSchema = new mongoose.Schema({
     required: [true, "Please select a category"],
   },
   tags: [String],
-  // tags: {
-  //   type: [String],
-  //   required: [true, "Please select tags"],
-  // },
   videoLink: {
     type: String,
     match: [
@@ -46,16 +42,18 @@ const CampaignSchema = new mongoose.Schema({
     type: Number,
     required: [true, "Please specify the amount you intend to raise"],
   },
-  faq: [
+  faqs: [
     {
-      question: String,
-      answer: String,
+      question: {
+        type: String,
+        required: true,
+      },
+      answer: {
+        type: String,
+        required: true,
+      },
     },
   ],
-  test: {
-    type: Object,
-    default: { question: "Hey", answer: "I love you" },
-  },
   endCampaign: {
     type: Boolean,
     default: false,
@@ -94,7 +92,7 @@ const CampaignSchema = new mongoose.Schema({
     {
       amount: {
         type: Number,
-        required: [true, "Enter an amount"],
+        // required: [true, "Enter an amount"],
       },
       title: {
         type: String,
@@ -113,12 +111,30 @@ const CampaignSchema = new mongoose.Schema({
         required: [true, "Enter a description for your perk"],
       },
       image: String,
-      qtyAvailable: Number,
-      deliveryDate: Date,
-      shipping: [
+      qtyAvailable: {
+        type: Number,
+        required: [true, "Enter the quantity available for your perk"],
+      },
+      deliveryDate: {
+        type: Date,
+        required: [true, "Enter the delivery date for your perk"],
+      },
+      shippings: [
         {
-          location: String,
-          fee: Number,
+          location: {
+            type: String,
+            required: [
+              true,
+              "Enter the location you want this perk delivered to",
+            ],
+          },
+          fee: {
+            type: Number,
+            required: [
+              true,
+              "Enter the shipping cost for devlivery of this perk",
+            ],
+          },
         },
       ],
     },
@@ -132,39 +148,39 @@ const CampaignSchema = new mongoose.Schema({
 });
 
 // Static method to update isCompleted field
-CampaignSchema.statics.updateToComplete = async function (campaignId) {
-  console.log("In statics");
-  try {
-    await this.model("Campaign").findByIdAndUpdate(campaignId, {
-      isCompleted: true,
-    });
-  } catch (error) {
-    console.log(error);
-  }
-};
+// CampaignSchema.statics.updateToComplete = async function (campaignId) {
+//   console.log("In statics");
+//   try {
+//     await this.model("Campaign").findByIdAndUpdate(campaignId, {
+//       isCompleted: true,
+//     });
+//   } catch (error) {
+//     console.log(error);
+//   }
+// };
 
 // Run cron jobs after a campaign is created
-CampaignSchema.post("save", async function () {
-  let duration = new Date(this.duration);
-  const currentCampaingId = this._id;
+// CampaignSchema.post("save", async function () {
+//   let duration = new Date(this.duration);
+//   const currentCampaingId = this._id;
 
-  const job = new CronJob(
-    "0 * * * *",
-    function () {
-      if (new Date() >= duration) {
-        const Campaign = mongoose.model("Campaign", CampaignSchema);
-        console.log("Running CRON job");
-        Campaign.updateToComplete(currentCampaingId);
-        job.stop();
-      }
-    },
-    function () {
-      console.log("CRON job completed successfully");
-    },
-    true,
-    "Africa/Lagos"
-  );
-  job.start();
-});
+//   const job = new CronJob(
+//     "0 * * * *",
+//     function () {
+//       if (new Date() >= duration) {
+//         const Campaign = mongoose.model("Campaign", CampaignSchema);
+//         console.log("Running CRON job");
+//         Campaign.updateToComplete(currentCampaingId);
+//         job.stop();
+//       }
+//     },
+//     function () {
+//       console.log("CRON job completed successfully");
+//     },
+//     true,
+//     "Africa/Lagos"
+//   );
+//   job.start();
+// });
 
 module.exports = mongoose.model("Campaign", CampaignSchema);

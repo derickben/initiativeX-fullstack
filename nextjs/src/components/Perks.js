@@ -270,12 +270,11 @@ export default function Perks() {
 
         <Item>
           <Typography variant="h5" component="div" gutterBottom>
-            Quantity Available
+            Quantity Available *
           </Typography>
           <Typography paragraph>
             You can limit the quantity available to backers based on production
-            volume. Leaving this field blank indicates that there is no quantity
-            limit.
+            volume.
           </Typography>
           <TextField
             sx={{ width: "30%" }}

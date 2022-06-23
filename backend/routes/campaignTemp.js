@@ -1,11 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const {
+  completeTempCampaign,
   getTempCampaigns,
   createTempCampaign,
   getTempCampaign,
   getTempCampaignAllPerkItems,
-  getTempCampaignPerkShipping,
+  getTempCampaignAllPerkShippings,
   updateTempCampaign,
   addTempCampaignPerk,
   addTempCampaignPerkItem,
@@ -27,6 +28,10 @@ router
   .route("/")
   .get(protect, authorize("admin"), getTempCampaigns)
   .post(protect, authorize("admin", "user"), createTempCampaign);
+
+router
+  .route("/complete")
+  .post(protect, authorize("admin", "user"), completeTempCampaign);
 
 router
   .route("/:id")
@@ -53,6 +58,10 @@ router
   .get(protect, authorize("admin", "user"), getTempCampaignAllPerkItems);
 
 router
+  .route("/:userId/perk/all/shippings")
+  .get(protect, authorize("admin", "user"), getTempCampaignAllPerkShippings);
+
+router
   .route("/:userId/perk/:perkId/item")
   .post(protect, authorize("admin", "user"), addTempCampaignPerkItem);
 
@@ -62,12 +71,11 @@ router
   .delete(protect, authorize("admin", "user"), deleteTempCampaignPerkItem);
 
 router
-  .route("/:userId/perk/:perkId/ship")
-  .get(protect, authorize("admin", "user"), getTempCampaignPerkShipping)
+  .route("/:userId/perk/:perkId/shipping")
   .post(protect, authorize("admin", "user"), addTempCampaignPerkShipping);
 
 router
-  .route("/:userId/perk/:perkId/ship/:shipId")
+  .route("/:userId/perk/:perkId/shipping/:shipId")
   .put(protect, authorize("admin", "user"), updateTempCampaignPerkShipping)
   .delete(protect, authorize("admin", "user"), deleteTempCampaignPerkShipping);
 

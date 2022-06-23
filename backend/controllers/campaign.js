@@ -57,73 +57,37 @@ exports.getCampaign = asyncHandler(async (req, res, next) => {
 // @access  Private [user]
 exports.createCampaign = asyncHandler(async (req, res, next) => {
   // Add logged in user to req.body
-  req.body.user = req.user.id;
+  // req.body.user = req.user.id;
 
-  if (!req.files) {
-    return next(new ErrorResponse(`Please include a file`, 400));
-  }
+  // Find all campaigns
 
-  const file = req.files["photo"];
+  let campaigns = await Campaign.find();
 
-  // Make sure the image is a photo
-  if (!file.mimetype.startsWith("image")) {
-    return next(new ErrorResponse(`Please upload an image file`, 400));
-  }
+  // Check if the current user has a temporary saved campaign
+  const tempCampaign = await CampaignTemp.findOne({ user: req.user.id });
 
-  // check Filesize
-  if (file.size > process.env.MAX_FILE_UPLOAD) {
+  if (!tempCampaign) {
     return next(
       new ErrorResponse(
-        `Please upload an image less than ${process.env.MAX_FILE_UPLOAD}`,
-        400
+        `No temporary campaign belonging to user  ${req.user.id}`,
+        404
       )
     );
   }
 
-  // Generate random name
-  crypto.randomBytes(16, (err, buf) => {
-    if (err) {
-      // Prints error
-      console.log(err);
-      return;
-    }
-    file.name = buf.toString("hex") + path.extname(file.name);
-    file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
-      if (err) {
-        console.log(err);
-        return next(new ErrorResponse(`Problem with file upload`, 500));
-      }
+  // if it does, add it to the array of campaigns
+  campaigns = [...campaigns, tempCampaign];
 
-      req.body.photo = file.name;
-      let campaign;
-      let pathToFile = `${process.env.FILE_UPLOAD_PATH}/${file.name}`;
+  // const test = new Campaign(tempCampaign);
 
-      // campaign = await Campaign.create(req.body);
+  campaigns = await Campaign.updateMany(tempCampaign);
 
-      try {
-        campaign = await Campaign.create(req.body);
-
-        // Delete campaignTemp after saving main campaign
-        const campaignTemp = await CampaignTemp.findOne({ user: req.user.id });
-
-        await campaignTemp.remove();
-      } catch (error) {
-        // If campaign creation fails, delete image
-        try {
-          fs.unlinkSync(pathToFile);
-          console.log("Successfully deleted the file");
-        } catch (error) {
-          return next(new ErrorResponse(error, 404));
-        }
-        return next(new ErrorResponse(error, 404));
-      }
-
-      res.status(200).json({
-        success: true,
-        data: campaign,
-      });
-    });
+  res.status(200).json({
+    success: true,
+    data: campaigns,
   });
+
+  // Generate random name
 });
 
 // @desc    Update campaign

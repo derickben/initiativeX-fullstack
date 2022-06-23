@@ -40,6 +40,7 @@ export default function Basics() {
 
   const [values, setValues] = useState({
     title: "",
+    amountNeeded: 500000,
     desc: "",
     categoryValue: "",
   });
@@ -78,6 +79,7 @@ export default function Basics() {
       duration,
       tags: tagName,
       title: values.title,
+      amountNeeded: values.amountNeeded,
       desc: values.desc,
       category: values.categoryValue,
     };
@@ -103,6 +105,7 @@ export default function Basics() {
     if (tempCampaign._id) {
       setValues({
         title: tempCampaign.title,
+        amountNeeded: tempCampaign.amountNeeded,
         desc: tempCampaign.desc,
         categoryValue: tempCampaign.category,
       });
@@ -176,6 +179,23 @@ export default function Basics() {
             onChange={handleChange("desc")}
             style={{ width: "100%" }}
           />
+        </Item>
+        <Item>
+          <Typography variant="h5" component="div" gutterBottom>
+            Campaign Goal Amount *
+          </Typography>
+          <Typography paragraph>
+            How much money would you like to raise for this campaign? A minimum
+            goal of 500,000 Naira is required
+          </Typography>
+          <FormControl fullWidth sx={{}} variant="outlined">
+            <OutlinedInput
+              id="outlined-adornment-amountNeeded"
+              value={values.amountNeeded}
+              onChange={handleChange("amountNeeded")}
+              aria-describedby="outlined-amountNeeded-helper-text"
+            />
+          </FormControl>
         </Item>
 
         <Item>

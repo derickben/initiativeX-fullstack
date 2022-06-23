@@ -15,21 +15,25 @@ import HighlightOffIcon from "@mui/icons-material/HighlightOff";
 import PerkUpdateModal from "./PerkUpdateModal";
 import ItemPerkModal from "./ItemPerkModal";
 import ItemsFromDB from "./ItemsFromDB";
+import ShippingsFromDB from "./ShippingsFromDB";
 
 export default function PerkFromDB({ perk, perkId, userId }) {
   const tempCampaignContext = useContext(TempCampaignContext);
   const {
     getAllItemsFromAllPerks,
+    getAllShippingsFromAllPerks,
     deletePerkInTempCampaign,
     updatePerkInTempCampaign,
     itemsFromContext,
     allItems,
+    shippingsFromContext,
+    allShippings,
     addItemToTempCampaign,
     addShipToTempCampaign,
   } = tempCampaignContext;
 
   const [items, setItems] = useState([]);
-  const [shipping, setshipping] = useState([]);
+  const [shippings, setshippings] = useState([]);
 
   const [toggleItemModal, setToggleItemModal] = useState(false);
 
@@ -41,8 +45,9 @@ export default function PerkFromDB({ perk, perkId, userId }) {
     setToggleShippingModal(true);
   };
 
-  const handleAddShippingSubmit = (value) => {
+  const handleAddShippingSubmit = (data) => {
     // call action to add shipping to campaign
+    addShipToTempCampaign(userId, perkId, data);
     setToggleShippingModal(false);
   };
 
@@ -81,34 +86,41 @@ export default function PerkFromDB({ perk, perkId, userId }) {
     setTogglePerkModal(false);
   };
 
-  const displayTitle = (title) => {
-    if (title) return title.substr(0, 20);
-
-    return title;
-  };
-
-  const displayDesc = (desc) => {
-    if (desc) return desc.substr(0, 20) + " ...";
-
-    return desc;
-  };
-
   const displayItemsFromDB = () => {
     const itemsForEachPerk = items.filter((item) => item.perkId === perkId);
 
-    if (itemsForEachPerk[0])
-      return (
-        <div>
-          {itemsForEachPerk[0].items.map((x) => (
-            <ItemsFromDB
-              itemName={x.itemName}
-              userId={userId}
-              perkId={perkId}
-              itemId={x._id}
-            />
-          ))}
-        </div>
-      );
+    return (
+      <div>
+        {itemsForEachPerk?.[0]?.items.map((x) => (
+          <ItemsFromDB
+            itemName={x.itemName}
+            userId={userId}
+            perkId={perkId}
+            itemId={x._id}
+          />
+        ))}
+      </div>
+    );
+  };
+
+  const displayShippingsFromDB = () => {
+    const shippingsForEachPerk = shippings.filter(
+      (ship) => ship.perkId === perkId
+    );
+
+    return (
+      <div>
+        {shippingsForEachPerk?.[0]?.shippings.map((x) => (
+          <ShippingsFromDB
+            fee={x.fee}
+            location={x.location}
+            userId={userId}
+            perkId={perkId}
+            shipId={x._id}
+          />
+        ))}
+      </div>
+    );
   };
 
   useEffect(() => {
@@ -118,12 +130,19 @@ export default function PerkFromDB({ perk, perkId, userId }) {
     }
   }, [userId, perkId, allItems.length, itemsFromContext.length]);
 
+  useEffect(() => {
+    getAllShippingsFromAllPerks(userId);
+    if (shippingsFromContext.length > 0) {
+      setshippings(shippingsFromContext);
+    }
+  }, [userId, perkId, allShippings.length, shippingsFromContext.length]);
+
   return (
     <StyledTableRow sx={{ textAlign: "center" }}>
       <StyledTableCell component="th" scope="row">
-        {displayTitle(perk.title)}
+        {perk?.title?.substr(0, 20)}
       </StyledTableCell>
-      <StyledTableCell>{displayDesc(perk.desc)}</StyledTableCell>
+      <StyledTableCell>{perk?.desc?.substr(0, 20) + " ..."}</StyledTableCell>
       <StyledTableCell>{perk.price}</StyledTableCell>
       <StyledTableCell>{perk.qtyAvailable}</StyledTableCell>
       <StyledTableCell>{perk.deliveryDate}</StyledTableCell>
@@ -140,7 +159,7 @@ export default function PerkFromDB({ perk, perkId, userId }) {
 
         {items.length > 0 && displayItemsFromDB()}
       </StyledTableCell>
-      <StyledTableCell align="right">
+      <StyledTableCell align="center">
         <IconButton
           sx={{}}
           color="primary"
@@ -150,6 +169,8 @@ export default function PerkFromDB({ perk, perkId, userId }) {
         >
           <AddBoxIcon fontSize="large" />
         </IconButton>
+
+        {shippings.length > 0 && displayShippingsFromDB()}
       </StyledTableCell>
       <StyledTableCell align="right">
         <IconButton

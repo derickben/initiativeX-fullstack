@@ -15,7 +15,7 @@ import {
 import {
   getTempCampaignRequest,
   getAllItemsFromAllPerksRequest,
-  getAllShippingsRequest,
+  getAllShippingsFromAllPerksRequest,
   addTempCampaignRequest,
   addFaqToTempCampaignRequest,
   addPerkToTempCampaignRequest,
@@ -43,13 +43,14 @@ const TempCampaignAction = (props) => {
     itemsFromContext: [],
     allItems: [],
     shippingsFromContext: [],
+    allShippings: [],
     error: null,
     success: null,
     snackbarOpen: false,
     loading: {
       getCampaign: false,
       getItems: false,
-      getShipping: false,
+      getShippings: false,
       addVideo: false,
       saveBasics: false,
       photo: false,
@@ -180,7 +181,7 @@ const TempCampaignAction = (props) => {
 
   // ITEMS
 
-  // GET ALL ITEMS IN A PERK ARRAY OF CURRENT USER
+  // GET ALL ITEMS IN ALL PERKS OF CURRENT USER
   const getAllItemsFromAllPerks = async (userId) => {
     if (userId) {
       // Set loading to true
@@ -237,20 +238,20 @@ const TempCampaignAction = (props) => {
       await deleteItemInTempCampaignRequest(userId, perkId, itemId, dispatch);
 
       // Call getAllItems
-      getAllItemsFromAllPerks(userId, perkId);
+      getAllItemsFromAllPerks(userId);
     }
   };
 
   // SHIPPING
 
-  // GET ALL SHIPPING IN A PERK ARRAY OF CURRENT USER
-  const getAllShippings = async (userId, perkId) => {
+  // GET ALL SHIPPING IN ALL PERKS OF CURRENT USER
+  const getAllShippingsFromAllPerks = async (userId) => {
     if (userId) {
       // Set loading to true
       setLoading(SET_LOADING_GET_ALL_SHIPPING);
 
       // Make axios get request to get all shippings in a perk array
-      getAllShippingsRequest(userId, perkId, dispatch);
+      getAllShippingsFromAllPerksRequest(userId, dispatch);
     } else {
       return;
     }
@@ -266,7 +267,7 @@ const TempCampaignAction = (props) => {
       await addShipToTempCampaignRequest(userId, perkId, data, dispatch);
 
       // Call getAllShippings
-      getAllShippings(userId, perkId);
+      getAllShippingsFromAllPerks(userId);
     }
   };
 
@@ -286,7 +287,7 @@ const TempCampaignAction = (props) => {
       );
 
       // Call getAllShippings
-      getAllShippings(userId, perkId);
+      getAllShippingsFromAllPerks(userId);
     }
   };
 
@@ -300,7 +301,7 @@ const TempCampaignAction = (props) => {
       await deleteShipInTempCampaignRequest(userId, perkId, shipId, dispatch);
 
       // Call getAllShippings
-      getAllShippings(userId, perkId);
+      getAllShippingsFromAllPerks(userId);
     }
   };
 
@@ -337,7 +338,7 @@ const TempCampaignAction = (props) => {
         setLoading,
         getTempCampaign,
         getAllItemsFromAllPerks,
-        getAllShippings,
+        getAllShippingsFromAllPerks,
         addTempCampaign,
         updateTempCampaign,
         deleteTempCampaign,

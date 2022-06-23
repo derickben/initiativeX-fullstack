@@ -26,7 +26,7 @@ export default function TextEditor() {
 
     const handler = (delta, oldDelta, source) => {
       if (source !== "user") return;
-      //
+
       console.log("delta", delta);
     };
     quill.on("text-change", handler);
