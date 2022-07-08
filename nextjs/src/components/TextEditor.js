@@ -1,4 +1,6 @@
 import { useCallback, useState, useEffect } from "react";
+import axios from "axios";
+import { AXIOS_OPTION, API_URL } from "src/config";
 import "quill/dist/quill.snow.css";
 import { styled } from "@mui/material/styles";
 import { TOOLBAR_OPTIONS } from "src/utility/quillToolbar";
@@ -22,14 +24,11 @@ const Item = styled("div")(({ theme, quill }) => ({
 let quillInstance;
 
 export default function TextEditor({ id, quill, setQuill, story }) {
-  // const [quill, setQuill] = useState();
-
   useEffect(() => {
     if (quill == null) return;
 
     const handler = (delta, oldDelta, source) => {
       if (source !== "user") return;
-
       // setStory(quill.getContents());
     };
     quill.on("text-change", handler);
@@ -58,7 +57,7 @@ export default function TextEditor({ id, quill, setQuill, story }) {
       modules: {
         toolbar: {
           container: TOOLBAR_OPTIONS,
-          handlers: { image: imageHandler(wrapper) },
+          handlers: { image: imageHandler },
         },
       },
     });
@@ -71,12 +70,10 @@ export default function TextEditor({ id, quill, setQuill, story }) {
   return <Item ref={wrapperRef} quill="quill" handleSubmit></Item>;
 }
 
-const imageHandler = (wrapper) => () => {
+const imageHandler = () => {
   const input = document.createElement("input");
   input.setAttribute("type", "file");
   input.click();
-
-  const url = "www.facebook.com";
 
   // Listen upload local image and save to server
   input.onchange = () => {
@@ -84,20 +81,35 @@ const imageHandler = (wrapper) => () => {
 
     // file type is only image.
     if (/^image\//.test(file.type)) {
-      insertToEditor(url, wrapper, input);
+      saveToServer(file);
     } else {
-      console.warn("You could only upload images.");
+      console.warn("You can only upload images.");
     }
   };
 };
 
-function insertToEditor(url, wrapper, input) {
+const saveToServer = async (photo) => {
+  const fd = new FormData();
+  fd.append("photo", photo);
+  fd.append("extraPath", "story");
+
+  const imageURL = await axios.post(
+    `${API_URL}/uploads`,
+    fd,
+    { withCredentials: true },
+    AXIOS_OPTION(photo.type)
+  );
+
+  insertToEditor(imageURL);
+};
+
+function insertToEditor(url) {
   let range = quillInstance.getSelection();
-  console.log("wrapper", wrapper);
+
   quillInstance.insertEmbed(
     range.index,
     "image",
-    `http://localhost:9000${url}`
+    `http://localhost:5000/${url.data.data}`
   );
   // wrapper.appendChild(input);
 }
