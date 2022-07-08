@@ -114,7 +114,6 @@ export default function Basics() {
       setDuration(tempCampaign.duration);
       settagName(tempCampaign.tags);
     }
-    console.log("tempCampaign", tempCampaign);
   }, [tempCampaign._id, user.id, tempCampaign.photo]);
 
   return (

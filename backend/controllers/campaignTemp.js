@@ -90,6 +90,10 @@ exports.completeTempCampaign = asyncHandler(async (req, res, next) => {
     );
   }
 
+  test = await CampaignTemp.findById("62b41c0ad5fa6ed9800c5c50");
+
+  console.log(test);
+
   // Run check to see if all the required fields have been completed
 
   const {

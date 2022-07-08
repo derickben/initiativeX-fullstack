@@ -56,6 +56,8 @@ export const addTempCampaignRequest = async (data, photo = {}, dispatch) => {
 
     // Add file path as path of req.body to create a temporary campaign
 
+    console.log("Data", data);
+
     let imageURL = null;
 
     if (photo.name) {

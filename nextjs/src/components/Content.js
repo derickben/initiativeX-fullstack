@@ -32,7 +32,8 @@ export default function Content() {
     videoLink: "",
   });
 
-  // const [story, setStory] = useState({})
+  const [story, setStory] = useState({});
+  const [quill, setQuill] = useState();
 
   const [urlError, setUrlError] = useState(null);
 
@@ -44,6 +45,7 @@ export default function Content() {
     event.preventDefault();
     const data = {
       videoLink: values.videoLink,
+      story: quill.getContents(),
     };
 
     addTempCampaign(user.id, data);
@@ -109,8 +111,8 @@ export default function Content() {
       setValues({
         videoLink: tempCampaign.videoLink,
       });
+      // setQuill(tempCampaign.story || {});
     }
-    console.log("tempCampaign", tempCampaign);
   }, [tempCampaign._id, user.id, tempCampaign.videoLink]);
 
   return (
@@ -186,7 +188,12 @@ export default function Content() {
             details that will motivate people to contribute. A good pitch is
             compelling, informative, and easy to digest.
           </Typography>
-          <TextEditor />
+          <TextEditor
+            setQuill={setQuill}
+            quill={quill}
+            story={tempCampaign.story}
+            id={tempCampaign._id}
+          />
         </Item>
 
         {/* LOADING MODAL COMPONENT */}
