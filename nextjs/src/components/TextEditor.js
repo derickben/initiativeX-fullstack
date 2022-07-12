@@ -4,7 +4,6 @@ import { AXIOS_OPTION, API_URL } from "src/config";
 import "quill/dist/quill.snow.css";
 import { styled } from "@mui/material/styles";
 import { TOOLBAR_OPTIONS } from "src/utility/quillToolbar";
-import fi from "date-fns/locale/fi/index";
 
 const Item = styled("div")(({ theme, quill }) => ({
   width: "100%",

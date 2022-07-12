@@ -13,23 +13,17 @@ import Footer from "./Footer";
 export default function Home() {
   return (
     <div>
-      <Paper elevation={3}>
+      <Paper>
         <Navbar />
         <CssBaseline />
-        <Container
-          maxWidth="lg"
-          sx={{ my: 5, py: 2, px: 0, backgroundColor: "green" }}
-        >
-          <Header />
+        <Header />
+        <Container maxWidth="lg" sx={{ my: 1, py: 2, px: 0 }}>
           <Value />
           <Featured />
           <Campaigns />
         </Container>
         <Jumbo />
-        <Container
-          maxWidth="xl"
-          sx={{ my: 5, py: 2, px: 0, backgroundColor: "green" }}
-        >
+        <Container maxWidth="xl" sx={{ mt: 5, p: 8 }}>
           <Footer />
         </Container>
       </Paper>

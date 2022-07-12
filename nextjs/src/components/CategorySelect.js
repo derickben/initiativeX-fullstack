@@ -1,5 +1,5 @@
-import { useState, useMemo, useEffect } from "react";
-import { styled } from "@mui/material/styles";
+import { useMemo } from "react";
+import { Item } from "src/utility/styledComp";
 import { Typography } from "@mui/material";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
@@ -7,13 +7,6 @@ import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
 import FormControl from "@mui/material/FormControl";
 import InputLabel from "@mui/material/InputLabel";
-
-const Item = styled("div")(({ theme }) => ({
-  ...theme.typography.body2,
-  padding: theme.spacing(1),
-  textAlign: "left",
-  width: "100%",
-}));
 
 export default function CategorySelect({
   categories,
